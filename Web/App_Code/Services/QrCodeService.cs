@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Budong.Common.Utils;
+﻿using Budong.Common.Utils;
 using Budong.Common.Third.Wechat;
 
 /// <summary>

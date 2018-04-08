@@ -1,13 +1,14 @@
-﻿<%@ WebHandler Language="C#" Class="Send" %>
+﻿<%@ WebHandler Language="C#" Class="Delete" %>
 
 using System.Web;
 using Budong.Common.Utils;
 
-public class Send : IHttpHandler {
+public class Delete : IHttpHandler {
 
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
+        int subjectId = Parse.ToInt(context.Request.Params["subjectId"]);
         string session3rd = context.Request.Params["session3rd"];
 
         //  定义返回结果
@@ -15,7 +16,7 @@ public class Send : IHttpHandler {
 
         if (result.ToInt("id") == 0)
         {
-            result = ClientService.Send(result.ToHash("data"), "hello world 111");
+            result = ClientMissionSubjectService.Delete(result.ToHash("data"), subjectId);
         }
 
         //  记录日志

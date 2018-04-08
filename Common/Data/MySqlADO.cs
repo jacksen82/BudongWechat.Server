@@ -261,6 +261,69 @@ namespace Budong.Common.Data
                 }
             }
         }
+        /// <summary>
+        /// 执行 T-SQL 语句，并返回数据库记录集合 [ 含分页 ]
+        /// </summary>
+        /// <param name="sql">string T-SQL 语句</param>
+        /// <param name="values">params object[] 参数集合 </param>
+        /// <param name="pageId">int 页码</param>
+        /// <param name="pageSize">int 页尺寸</param>
+        /// <returns>Utils.HashCollection 记录集合</returns>
+        public Utils.Hash GetHashCollectionByPageId(string sql, int pageId, int pageSize, params object[] values)
+        {
+            using (MySqlConnection conn = new MySqlConnection(this._ConnectionString))
+            {
+                using (MySqlCommand comd = new MySqlCommand(sql, conn))
+                {
+                    double recordCount = 0;
+                    double recordStart = ((pageId - 1) * pageSize);
+                    double recordEnd = recordStart + pageSize;
+
+                    this.AddParameters(comd, values);
+                    conn.Open();
+                    try
+                    {
+                        using (MySqlDataReader reader = comd.ExecuteReader())
+                        {
+                            Utils.Hash result = new Utils.Hash();
+                            Utils.HashCollection data = new Utils.HashCollection();
+                            while (reader.Read())
+                            {
+                                if (recordCount >= recordStart && recordCount < recordEnd)
+                                {
+                                    Utils.Hash item = new Utils.Hash();
+                                    for (int i = 0; i < reader.FieldCount; i++)
+                                    {
+                                        if (reader.GetValue(i) == DBNull.Value && reader.GetFieldType(i).Name == "String")
+                                        {
+                                            item[reader.GetName(i)] = String.Empty;
+                                        }
+                                        else
+                                        {
+                                            item[reader.GetName(i)] = reader.GetValue(i);
+                                        }
+                                    }
+                                    data.Add(item);
+                                }
+                                recordCount++;
+                            }
+                            reader.Close();
+                            result["data"] = data;
+                            result["pageCount"] = Math.Ceiling(recordCount / pageSize);
+                            return result;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                    }
+                    finally
+                    {
+                        conn.Close();
+                    }
+                }
+            }
+        }
 
         #region 私有变量
         /// <summary>

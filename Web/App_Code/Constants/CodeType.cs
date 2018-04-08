@@ -79,6 +79,25 @@ public enum CodeType : int
     CoinZero = 2101,
 
     /// <summary>
+    /// 关卡重名
+    /// </summary>
+    MissionTitleExists = 5001,
+
+    /// <summary>
+    /// 题目重复
+    /// </summary>
+    SubjectTitleExists = 5101,
+    /// <summary>
+    /// 音频文件为空
+    /// </summary>
+    SubjectMP3Empty = 5111,
+    /// <summary>
+    /// 音频格式不对
+    /// </summary>
+    SubjectMP3Unvalid = 5112,
+
+
+    /// <summary>
     /// 数据库未知错误
     /// </summary>
     DataBaseUnknonw = 9899,

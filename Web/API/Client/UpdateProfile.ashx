@@ -1,15 +1,16 @@
-﻿<%@ WebHandler Language="C#" Class="Share" %>
+﻿<%@ WebHandler Language="C#" Class="updateProfile" %>
 
 using System.Web;
 using Budong.Common.Utils;
 
-public class Share : IHttpHandler {
+public class updateProfile : IHttpHandler {
 
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
-        string encryptedData = context.Request.Params["encryptedData"];
-        string iv = context.Request.Params["iv"];
+        int gender = Parse.ToInt(context.Request.Params["gender"]);
+        string nick = context.Request.Params["nick"];
+        string avatarUrl = context.Request.Params["avatarUrl"];
         string session3rd = context.Request.Params["session3rd"];
 
         //  定义返回结果
@@ -17,7 +18,7 @@ public class Share : IHttpHandler {
 
         if (result.ToInt("id") == 0)
         {
-            result = ClientService.Share(result.ToHash("data"), encryptedData, iv);
+            result = ClientService.UpdateProflie(result.ToHash("data"), nick, gender, avatarUrl);
         }
 
         //  记录日志

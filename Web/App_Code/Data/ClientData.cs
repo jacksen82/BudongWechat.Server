@@ -69,12 +69,26 @@ public class ClientData
     /// <param name="gender">int 性别</param>
     /// <param name="avatarUrl">string 头像图片</param>
     /// <returns>int 受影响的行数</returns>
-    public static int Update(int clientId, string nick, int gender, string avatarUrl)
+    public static int UpdateProfile(int clientId, string nick, int gender, string avatarUrl)
     {
-        string sql = "UPDATE tc_client SET nick=@1,gender=@2,avatarUrl=@3 WHERE id=@0";
+        string sql = "UPDATE tc_client SET nick=@1,gender=@2,avatarUrl=@3,actived=1 WHERE id=@0";
         using (MySqlADO ado = new MySqlADO())
         {
             return ado.NonQuery(sql, clientId, nick, gender, avatarUrl);
+        }
+    }
+    /// <summary>
+    /// 更新用户出生年代
+    /// </summary>
+    /// <param name="clientId">int 客户端编号</param>
+    /// <param name="birthyear">int 出生年代</param>
+    /// <returns>int 受影响的行数</returns>
+    public static int UpdateBirthyear(int clientId, int birthyear)
+    {
+        string sql = "UPDATE tc_client SET birthyear=@1 WHERE id=@0";
+        using (MySqlADO ado = new MySqlADO())
+        {
+            return ado.NonQuery(sql, clientId, birthyear);
         }
     }
     /// <summary>
@@ -83,7 +97,7 @@ public class ClientData
     /// <param name="clientId">int 客户端编号</param>
     /// <param name="balance">int 余额</param>
     /// <returns>int 受影响的行数</returns>
-    public static int Update(int clientId, int balance)
+    public static int UpdateBalance(int clientId, int balance)
     {
         string sql = "UPDATE tc_client SET balance=@1 WHERE id=@0";
         using (MySqlADO ado = new MySqlADO())

@@ -9,9 +9,9 @@ public class Relate : IHttpHandler {
     {
         //  格式化参数
         int fromClientId = Parse.ToInt(context.Request.Params["fromClientId"]);
-        string session3rd = context.Request.Params["session3rd"];
         string encryptedData = context.Request.Params["encryptedData"];
         string iv = context.Request.Params["iv"];
+        string session3rd = context.Request.Params["session3rd"];
 
         //  定义返回结果
         Hash result = ClientService.Token(session3rd);

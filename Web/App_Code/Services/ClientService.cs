@@ -46,7 +46,7 @@ public class ClientService
             Hash app = APPData.GetById(appId);
             if (app.ToInt("id") > 0)
             {
-                Hash wechatSession = API.Code2Session(app.ToString("appId"), app.ToString("appSecret"), code);
+                Hash wechatSession = API.Code2Session(app.ToString("appKey"), app.ToString("appSecret"), code);
                 if (wechatSession.ToInt("errcode") == 0)
                 {
                     string openId = wechatSession.ToString("openid");
@@ -78,6 +78,38 @@ public class ClientService
         return new Hash((int)CodeType.CodeRequired, "code 为空");
     }
     /// <summary>
+    /// 更新用户资料
+    /// </summary>
+    /// <param name="client">Hash 客户端信息</param>
+    /// <param name="nick">string 昵称</param>
+    /// <param name="gender">int 性别</param>
+    /// <param name="avatarUrl">string 头像</param>
+    /// <returns>Hash 返回结果</returns>
+    public static Hash UpdateProflie(Hash client, string nick, int gender, string avatarUrl)
+    {
+        if (ClientData.UpdateProfile(client.ToInt("id"), nick, gender, avatarUrl) > 0)
+        {
+            client = ClientData.GetById(client.ToInt("id"));
+            return new Hash((int)CodeType.OK, "成功", client);
+        }
+        return new Hash((int)CodeType.DataBaseUnknonw, "数据库操作失败");
+    }
+    /// <summary>
+    /// 更新出生年代
+    /// </summary>
+    /// <param name="client">Hash 客户端信息</param>
+    /// <param name="birthyear">int 出生年代</param>
+    /// <returns>Hash 返回结果</returns>
+    public static Hash UpdateBirthyear(Hash client, int birthyear)
+    {
+        if (ClientData.UpdateBirthyear(client.ToInt("id"), birthyear) > 0)
+        {
+            client = ClientData.GetById(client.ToInt("id"));
+            return new Hash((int)CodeType.OK, "成功", client);
+        }
+        return new Hash((int)CodeType.DataBaseUnknonw, "数据库操作失败");
+    }
+    /// <summary>
     /// 建立客户端关系
     /// </summary>
     /// <param name="client">Hash 客户端信息</param>
@@ -92,13 +124,14 @@ public class ClientService
             ClientFriendData.Create(client.ToInt("id"), fromClientId);
             ClientFriendData.Create(fromClientId, client.ToInt("id"));
         }
-        if (!Genre.IsNull(encryptedData) && !Genre.IsNull(iv) && !client.IsNull("session_key"))
+        if (!Genre.IsNull(encryptedData) && !Genre.IsNull(iv) && !client.IsNull("sessionKey"))
         {
-            Hash shareTicket = API.GetEncryptedData(encryptedData, client.ToString("session_key"), iv);
+            Hash shareTicket = API.GetEncryptedData(encryptedData, client.ToString("sessionKey"), iv);
             if (!shareTicket.IsNull("openGId"))
             {
                 ClientGroupData.Create(client.ToInt("id"), shareTicket.ToString("openGId"));
             }
+            return new Hash((int)CodeType.Unknown, "成功",shareTicket);
         }
         return new Hash((int)CodeType.OK, "成功");
     }
@@ -111,11 +144,18 @@ public class ClientService
     /// <returns>Hash 返回结果</returns>
     public static Hash Share(Hash client, string encryptedData, string iv)
     {
-        if (!Genre.IsNull(encryptedData) && !Genre.IsNull(iv) && !client.IsNull("session_key"))
+        if (!Genre.IsNull(encryptedData) && !Genre.IsNull(iv) && !client.IsNull("sessionKey"))
         {
             Hash shareTicket = API.GetEncryptedData(encryptedData, client.ToString("sessionKey"), iv);
 
             ClientShareData.Create(client.ToInt("id"), shareTicket.ToString("openGId"));
+            if (!shareTicket.IsNull("openGId"))
+            {
+                if (ClientGroupData.Create(client.ToInt("id"), shareTicket.ToString("openGId")) > 0)
+                {
+                    ClientCoinService.Change(client, AvenueType.ShareToGroup, 100, "分享到群奖励");
+                }
+            }
         }
         return new Hash((int)CodeType.OK, "成功");
     }
@@ -148,27 +188,6 @@ public class ClientService
             return new Hash((int)CodeType.ClientInaction, "客户端不活跃");
         }
         return new Hash((int)CodeType.WechatAccessTokenInvalid, "accessToken 无效");
-    }
-    /// <summary>
-    /// 用户金币账户操作
-    /// </summary>
-    /// <param name="client">Hash 客户端信息</param>
-    /// <param name="amount">int 金额</param>
-    /// <returns>Hash 返回结果</returns>
-    public static Hash Coin(Hash client, AvenueType avenue, int amount)
-    {
-        if (amount != 0)
-        {
-            if (ClientCoinData.Create(client.ToInt("id"), avenue, amount, amount + client.ToInt("coins")) > 0)
-            {
-                if (ClientData.Update(client.ToInt("id"), amount + client.ToInt("coins")) > 0)
-                {
-                    return new Hash((int)CodeType.OK, "成功");
-                }
-            }
-            return new Hash((int)CodeType.DataBaseUnknonw, "数据库操作失败");
-        }
-        return new Hash((int)CodeType.CoinZero, "金额不能为零");
     }
     /// <summary>
     /// 记录客户端日志

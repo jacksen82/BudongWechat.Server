@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Web", "Web\", "{6EA3A22E-52F9-475A-ADE7-2B6E6BA4A3B0}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
 		ProjectReferences = "{61bb50db-d75f-4c6a-9c77-258310bfbe17}|Budong.Common.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_53474"
 		Debug.AspNetCompiler.PhysicalPath = "Web\"

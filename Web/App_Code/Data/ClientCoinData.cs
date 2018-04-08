@@ -7,19 +7,34 @@ using Budong.Common.Utils;
 public class ClientCoinData
 {
     /// <summary>
-    /// 插入分享记录
+    /// 插入金币记录
     /// </summary>
     /// <param name="clientId">int 客户端编号</param>
     /// <param name="avenue">AvenueType 途径</param>
     /// <param name="amount">int 金额</param>
     /// <param name="balance">int 余额</param>
+    /// <param name="text">string 描述</param>
     /// <returns>int 受影响的行数</returns>
-    public static int Create(int clientId, AvenueType avenue, int amount, int balance)
+    public static int Create(int clientId, AvenueType avenue, int amount, int balance, string text)
     {
-        string sql = "INSERT INTO tc_client_coin (clientId,avenue,amount,balance) VALUES(@0,@1,@2,@3)";
+        string sql = "INSERT INTO tc_client_coin (clientId,avenue,amount,balance,text) VALUES(@0,@1,@2,@3,@4)";
         using (MySqlADO ado = new MySqlADO())
         {
-            return ado.NonQuery(sql, clientId, (int)avenue, amount, balance);
+            return ado.NonQuery(sql, clientId, (int)avenue, amount, balance,text);
+        }
+    }
+    /// <summary>
+    /// 获取金币账户明细
+    /// </summary>
+    /// <param name="clientId">int 客户端编号</param>
+    /// <param name="PageId">int 页码</param>
+    /// <returns>Hash 返回结果集合</returns>
+    public static Hash List(int clientId, int PageId)
+    {
+        string sql = "SELECT * FROM tc_client_coin WHERE clientId=@0 ORDER BY createTime DESC";
+        using (MySqlADO ado = new MySqlADO())
+        {
+            return ado.GetHashCollectionByPageId(sql, PageId, 20, clientId);
         }
     }
 }

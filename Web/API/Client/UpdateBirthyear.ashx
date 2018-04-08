@@ -1,15 +1,14 @@
-﻿<%@ WebHandler Language="C#" Class="Share" %>
+﻿<%@ WebHandler Language="C#" Class="UpdateBirthyear" %>
 
 using System.Web;
 using Budong.Common.Utils;
 
-public class Share : IHttpHandler {
+public class UpdateBirthyear : IHttpHandler {
 
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
-        string encryptedData = context.Request.Params["encryptedData"];
-        string iv = context.Request.Params["iv"];
+        int birthyear = Parse.ToInt(context.Request.Params["birthyear"]);
         string session3rd = context.Request.Params["session3rd"];
 
         //  定义返回结果
@@ -17,7 +16,7 @@ public class Share : IHttpHandler {
 
         if (result.ToInt("id") == 0)
         {
-            result = ClientService.Share(result.ToHash("data"), encryptedData, iv);
+            result = ClientService.UpdateBirthyear(result.ToHash("data"), birthyear);
         }
 
         //  记录日志
