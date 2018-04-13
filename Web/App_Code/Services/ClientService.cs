@@ -78,6 +78,16 @@ public class ClientService
         return new Hash((int)CodeType.CodeRequired, "code 为空");
     }
     /// <summary>
+    /// 获取用户资料
+    /// </summary>
+    /// <param name="client">Hash 客户端信息</param>
+    /// <returns>Hash 返回结果</returns>
+    public static Hash Detail(Hash client)
+    {
+        client = ClientData.GetById(client.ToInt("id"));
+        return new Hash((int)CodeType.OK, "成功", client);
+    }
+    /// <summary>
     /// 更新用户资料
     /// </summary>
     /// <param name="client">Hash 客户端信息</param>
@@ -151,10 +161,11 @@ public class ClientService
             ClientShareData.Create(client.ToInt("id"), shareTicket.ToString("openGId"));
             if (!shareTicket.IsNull("openGId"))
             {
-                if (ClientGroupData.Create(client.ToInt("id"), shareTicket.ToString("openGId")) > 0)
+                if (ClientGroupData.GetByClientIdAndOpenGId(client.ToInt("id"), shareTicket.ToString("openGId")).ToInt("id") == 0)
                 {
                     ClientCoinService.Change(client, AvenueType.ShareToGroup, 100, "分享到群奖励");
                 }
+                ClientGroupData.Create(client.ToInt("id"), shareTicket.ToString("openGId"));
             }
         }
         return new Hash((int)CodeType.OK, "成功");

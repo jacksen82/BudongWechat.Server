@@ -9,6 +9,17 @@ using Budong.Common.Utils;
 public class ClientMissionSubjectService
 {
     /// <summary>
+    /// 获取题目详细信息
+    /// </summary>
+    /// <param name="client">Hash 客户端信息</param>
+    /// <param name="subjectId">int 题目编号</param>
+    /// <returns>Hash 返回结果</returns>
+    public static Hash Detail(Hash client, int subjectId)
+    {
+        Hash subject = ClientMissionSubjectData.GetById(subjectId);
+        return new Hash((int)CodeType.OK, "成功", subject);
+    }
+    /// <summary>
     /// 添加新题目
     /// </summary>
     /// <param name="client">Hash 客户端信息</param>
@@ -41,6 +52,7 @@ public class ClientMissionSubjectService
         }
         if (ClientMissionSubjectData.Add(client.ToInt("id"), missionId, title, tip, categoryId, index, mp3Url) > 0)
         {
+            ClientMissionService.Update(client, missionId); //  更新关卡标签及题目数量
             return new Hash((int)CodeType.OK, "成功");
         }
         return new Hash((int)CodeType.DataBaseUnknonw, "数据库操作失败");
@@ -63,6 +75,7 @@ public class ClientMissionSubjectService
         }
         if (ClientMissionSubjectData.Edit(subjectId, title, tip, categoryId) > 0)
         {
+            ClientMissionService.Update(client, missionId); //  更新关卡标签及题目数量
             return new Hash((int)CodeType.OK, "成功");
         }
         return new Hash((int)CodeType.DataBaseUnknonw, "数据库操作失败");
@@ -85,7 +98,8 @@ public class ClientMissionSubjectService
             {
 
             }
-            ClientMissionSubjectData.Clear(subjectId);
+            ClientMissionService.Update(client, subject.ToInt("missionId")); //  更新关卡标签及题目数量
+            ClientMissionSubjectData.Clear(subjectId);  //  清理题目痕迹
             return new Hash((int)CodeType.OK, "成功");
         }
         return new Hash((int)CodeType.DataBaseUnknonw, "数据库操作失败");

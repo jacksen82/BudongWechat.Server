@@ -27,14 +27,15 @@ public class ClientCoinData
     /// 获取金币账户明细
     /// </summary>
     /// <param name="clientId">int 客户端编号</param>
-    /// <param name="PageId">int 页码</param>
+    /// <param name="pageId">int 页码</param>
+    /// <param name="pageSize">int 页尺寸</param>
     /// <returns>Hash 返回结果集合</returns>
-    public static Hash List(int clientId, int PageId)
+    public static Hash List(int clientId, int pageId, int pageSize)
     {
         string sql = "SELECT * FROM tc_client_coin WHERE clientId=@0 ORDER BY createTime DESC";
         using (MySqlADO ado = new MySqlADO())
         {
-            return ado.GetHashCollectionByPageId(sql, PageId, 20, clientId);
+            return ado.GetHashCollectionByPageId(sql, pageId, pageSize, clientId);
         }
     }
 }

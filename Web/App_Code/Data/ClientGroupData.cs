@@ -12,7 +12,7 @@ public class ClientGroupData
     /// <param name="clientId">int 客户端编号</param>
     /// <param name="openGId">string 群标识</param>
     /// <returns>Hash 详细信息</returns>
-    public static Hash GetByClientIdAndOpenId(int clientId, string openGId)
+    public static Hash GetByClientIdAndOpenGId(int clientId, string openGId)
     {
         string sql = "SELECT id FROM tc_client_group WHERE clientId=@0 AND openGId=@1";
         using (MySqlADO ado = new MySqlADO())

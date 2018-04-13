@@ -36,10 +36,11 @@ public class ClientCoinService
     /// </summary>
     /// <param name="client">Hash 客户端信息</param>
     /// <param name="pageId">int 页码</param>
+    /// <param name="pageSize">int 页尺寸</param>
     /// <returns>Hash 返回结果</returns>
-    public static Hash List(Hash client, int pageId)
+    public static Hash List(Hash client, int pageId, int pageSize)
     {
-        Hash coins = ClientCoinData.List(client.ToInt("id"), pageId);
+        Hash coins = ClientCoinData.List(client.ToInt("id"), pageId, pageSize);
         return new Hash((int)CodeType.OK, "成功", coins);
     }
 }

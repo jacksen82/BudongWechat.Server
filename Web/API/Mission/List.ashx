@@ -16,7 +16,7 @@ public class List : IHttpHandler {
 
         if (result.ToInt("id") == 0)
         {
-            result = ClientCoinService.List(result.ToHash("data"), pageId, 5);
+            result = MissionService.List(result.ToHash("data"), pageId, 5);
         }
 
         //  记录日志

@@ -21,6 +21,32 @@ public class ClientMissionData
         }
     }
     /// <summary>
+    /// 获取关卡题目数量
+    /// </summary>
+    /// <param name="missionId">int 关卡编号</param>
+    /// <returns>int 题目数量</returns>
+    public static int GetSubjectCount(int missionId)
+    {
+        string sql = "SELECT COUNT(*) FROM tm_mission_subject WHERE missionId=@0";
+        using (MySqlADO ado = new MySqlADO())
+        {
+            return ado.GetInt(sql, missionId);
+        }
+    }
+    /// <summary>
+    /// 获取关卡分类集合
+    /// </summary>
+    /// <param name="missionId">int 关卡编号</param>
+    /// <returns>object[] 分类集合</returns>
+    public static object[] GetCategoryIds(int missionId)
+    {
+        string sql = "SELECT categoryId FROM tm_mission_subject WHERE missionId=@0 GROUP BY categoryId ORDER BY COUNT(*) DESC";
+        using (MySqlADO ado = new MySqlADO())
+        {
+            return ado.GetValues(sql, missionId);
+        }
+    }
+    /// <summary>
     /// 根据编号获取关卡信息
     /// </summary>
     /// <param name="missionId">int 关卡编号</param>
@@ -86,6 +112,21 @@ public class ClientMissionData
         using (MySqlADO ado = new MySqlADO())
         {
             return ado.NonQuery(sql, missionId, title);
+        }
+    }
+    /// <summary>
+    /// 更新关卡标签及题目数量
+    /// </summary>
+    /// <param name="missionId">int 关卡编号</param>
+    /// <param name="tags">string 标签</param>
+    /// <param name="subjectCount">int 题目数量</param>
+    /// <returns>int 受影响的行数</returns>
+    public static int Update(int missionId, string tags, int subjectCount)
+    {
+        string sql = "UPDATE tm_mission SET tags=@1,subjectCount=@2 WHERE id=@0";
+        using (MySqlADO ado = new MySqlADO())
+        {
+            return ado.NonQuery(sql, missionId, tags, subjectCount);
         }
     }
     /// <summary>

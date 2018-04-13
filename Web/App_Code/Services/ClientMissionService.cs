@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Web;
+﻿using System;
 using Budong.Common.Utils;
 
 /// <summary>
@@ -33,7 +32,8 @@ public class ClientMissionService
         }
         if (ClientMissionData.Create(client.ToInt("id"), title) > 0)
         {
-            return new Hash((int)CodeType.OK, "成功");
+            Hash mission = ClientMissionData.GetByTitle(client.ToInt("id"), title);
+            return new Hash((int)CodeType.OK, "成功", mission);
         }
         return new Hash((int)CodeType.DataBaseUnknonw, "数据库操作失败");
     }
@@ -51,6 +51,27 @@ public class ClientMissionService
             return new Hash((int)CodeType.MissionTitleExists, "关卡重名");
         }
         if (ClientMissionData.Edit(missionId, title) > 0)
+        {
+            return new Hash((int)CodeType.OK, "成功");
+        }
+        return new Hash((int)CodeType.DataBaseUnknonw, "数据库操作失败");
+    }
+    /// <summary>
+    /// 更新关卡信息
+    /// </summary>
+    /// <param name="client">Hash 客户端信息</param>
+    /// <param name="missionId">int 关卡编号</param>
+    /// <returns>Hash 返回结果</returns>
+    public static Hash Update(Hash client, int missionId)
+    {
+        int subjectCount = ClientMissionData.GetSubjectCount(missionId);
+        string tags = String.Empty;
+        object[] categoryIds = ClientMissionData.GetCategoryIds(missionId);
+        foreach (object categoryId in categoryIds)
+        {
+            tags += (String.IsNullOrEmpty(tags) ? "" : ",") + Filter.categoryIdToName(Parse.ToInt(categoryId));
+        }
+        if (ClientMissionData.Update(missionId, tags, subjectCount) > 0)
         {
             return new Hash((int)CodeType.OK, "成功");
         }

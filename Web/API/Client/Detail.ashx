@@ -1,14 +1,13 @@
-﻿<%@ WebHandler Language="C#" Class="List" %>
+﻿<%@ WebHandler Language="C#" Class="Detail" %>
 
 using System.Web;
 using Budong.Common.Utils;
 
-public class List : IHttpHandler {
+public class Detail : IHttpHandler {
 
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
-        int pageId = Parse.ToInt(context.Request.Params["pageId"], 1);
         string session3rd = context.Request.Params["session3rd"];
 
         //  定义返回结果
@@ -16,7 +15,7 @@ public class List : IHttpHandler {
 
         if (result.ToInt("id") == 0)
         {
-            result = ClientCoinService.List(result.ToHash("data"), pageId, 5);
+            result = ClientService.Detail(result.ToHash("data"));
         }
 
         //  记录日志
