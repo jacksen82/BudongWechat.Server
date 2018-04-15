@@ -1,9 +1,9 @@
-﻿<%@ WebHandler Language="C#" Class="List" %>
+﻿<%@ WebHandler Language="C#" Class="Recommend" %>
 
 using System.Web;
 using Budong.Common.Utils;
 
-public class List : IHttpHandler {
+public class Recommend : IHttpHandler {
 
     public void ProcessRequest(HttpContext context)
     {
@@ -15,7 +15,7 @@ public class List : IHttpHandler {
 
         if (result.ToInt("id") == 0)
         {
-            result = MissionService.List(result.ToHash("data"));
+            result = MissionService.Recommend(result.ToHash("data"));
         }
 
         //  记录日志

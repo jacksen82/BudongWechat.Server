@@ -12,12 +12,20 @@ public class MissionService
     /// 获取关卡列表
     /// </summary>
     /// <param name="client">Hash 客户端信息</param>
-    /// <param name="pageId">int 页码</param>
-    /// <param name="pageSize">int 页尺寸</param>
     /// <returns>Hash 返回结果</returns>
-    public static Hash List(Hash client, int pageId, int pageSize)
+    public static Hash List(Hash client)
     {
-        Hash missions = MissionData.List(client.ToInt("id"), pageId, pageSize);
+        Hash missions = MissionData.List(client.ToInt("id"));
+        return new Hash((int)CodeType.OK, "成功", missions);
+    }
+    /// <summary>
+    /// 获取推荐关卡列表
+    /// </summary>
+    /// <param name="client">Hash 客户端信息</param>
+    /// <returns>Hash 返回结果</returns>
+    public static Hash Recommend(Hash client)
+    {
+        Hash missions = MissionData.Recommend(client.ToInt("id"));
         return new Hash((int)CodeType.OK, "成功", missions);
     }
     /// <summary>
@@ -28,11 +36,9 @@ public class MissionService
     /// <returns>Hash 返回结果</returns>
     public static Hash Detail(Hash client, int missionId)
     {
-        Hash mission = MissionData.GetById(missionId);
-        Hash missionClient = MissionData.GetByIdAndClientId(missionId, client.ToInt("id"));
+        Hash mission = MissionClientData.GetByIdAndClientId(missionId, client.ToInt("id"));
         mission["author"] = ClientData.GetById(mission.ToInt("clientId"));
         mission["subjects"] = MissionSubjectData.List(missionId).ToHashCollection("data");
-        mission["subjectPassCount"] = missionClient.ToInt("subjectPassCount");
         return new Hash((int)CodeType.OK, "成功", mission);
     }
 }

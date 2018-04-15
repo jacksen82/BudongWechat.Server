@@ -18,6 +18,19 @@ public enum AvenueType : int
     MissionCreate = 1300,
 
     /// <summary>
+    /// 获取提示
+    /// </summary>
+    GameTip = 2100,
+    /// <summary>
+    /// 跳过题目
+    /// </summary>
+    GameSkip = 2101,
+    /// <summary>
+    /// 重听题目音频
+    /// </summary>
+    GameReplay = 2102,
+
+    /// <summary>
     /// 未知错误
     /// </summary>
     Unknown = 9999

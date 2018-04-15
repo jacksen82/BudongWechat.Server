@@ -28,7 +28,7 @@ public class ClientGroupData
     /// <returns>int 受影响的行数</returns>
     public static int Create(int clientId, string openGId)
     {
-        string sql = "INSERT INTO tc_client_group (clientId, openGId) VALUES(@0,@1) ON DUPLICATE KEY UPDATE clientId=@0 AND openGId=@1";
+        string sql = "INSERT INTO tc_client_group (clientId, openGId) VALUES(@0,@1) ON DUPLICATE KEY UPDATE clientId=VALUES(clientId), openGId=VALUES(openGId)";
         using (MySqlADO ado = new MySqlADO())
         {
             return ado.NonQuery(sql, clientId, openGId);

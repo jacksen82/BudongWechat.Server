@@ -94,7 +94,7 @@ public class ClientMissionData
     /// <returns>int 受影响的行数</returns>
     public static int Create(int clientId, string title)
     {
-        string sql = "INSERT INTO tm_mission (clientId,title) VALUES(@0,@1) ON DUPLICATE KEY UPDATE title=@1";
+        string sql = "INSERT INTO tm_mission (clientId,title) VALUES(@0,@1) ON DUPLICATE KEY UPDATE title=VALUES(title)";
         using (MySqlADO ado = new MySqlADO())
         {
             return ado.NonQuery(sql, clientId, title);
@@ -149,7 +149,7 @@ public class ClientMissionData
     public static void Clear(int missionId)
     {
         string sql = "DELETE FROM tm_mission_client WHERE missionId=@0;" +
-            "DELETE FROM tm_mission_client_subject WHERE missionId=@0;" +
+            "DELETE FROM tm_mission_subject_client WHERE missionId=@0;" +
             "DELETE FROM tm_mission_subject WHERE missionId=@0;";
         using (MySqlADO ado = new MySqlADO())
         {

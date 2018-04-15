@@ -1,13 +1,15 @@
-﻿<%@ WebHandler Language="C#" Class="List" %>
+﻿<%@ WebHandler Language="C#" Class="Answer" %>
 
 using System.Web;
 using Budong.Common.Utils;
 
-public class List : IHttpHandler {
+public class Answer : IHttpHandler {
 
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
+        int subjectId = Parse.ToInt(context.Request.Params["subjectId"]);
+        int secondCount = Parse.ToInt(context.Request.Params["secondCount"]);
         string session3rd = context.Request.Params["session3rd"];
 
         //  定义返回结果
@@ -15,7 +17,7 @@ public class List : IHttpHandler {
 
         if (result.ToInt("id") == 0)
         {
-            result = MissionService.List(result.ToHash("data"));
+            result = MissionGameService.Answer(result.ToHash("data"), subjectId, secondCount);
         }
 
         //  记录日志

@@ -59,6 +59,7 @@ public class ClientService
                     {
                         ClientData.Create(appId, openId, unionId);
                         client = ClientData.GetByOpenId(appId, openId);
+                        ClientCoinService.Change(client, AvenueType.Register, 100, "激活新用户");
                     }
                     if (clientSession.ToInt("id") == 0)
                     {

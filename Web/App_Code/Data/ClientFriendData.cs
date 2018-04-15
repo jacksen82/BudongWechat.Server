@@ -28,7 +28,7 @@ public class ClientFriendData
     /// <returns>int 受影响的行数</returns>
     public static int Create(int clientId, int fromClientId)
     {
-        string sql = "INSERT INTO tc_client_friend (clientId, friendClientId) VALUES(@0,@1) ON DUPLICATE KEY UPDATE clientId=@0 AND friendClientId=@1";
+        string sql = "INSERT INTO tc_client_friend (clientId, friendClientId) VALUES(@0,@1) ON DUPLICATE KEY UPDATE clientId=VALUES(clientId), friendClientId=VALUES(friendClientId)";
         using (MySqlADO ado = new MySqlADO())
         {
             return ado.NonQuery(sql, clientId, fromClientId);

@@ -55,7 +55,7 @@ public class ClientData
     /// <returns>int 受影响的行数</returns>
     public static int Create(int appId, string openId, string unionId)
     {
-        string sql = "INSERT INTO tc_client (appId,openId,unionId) VALUES(@0,@1,@2) ON DUPLICATE KEY UPDATE appId=@0 AND openId=@1";
+        string sql = "INSERT INTO tc_client (appId,openId,unionId) VALUES(@0,@1,@2) ON DUPLICATE KEY UPDATE appId=VALUES(appId), openId=VALUES(openId)";
         using (MySqlADO ado = new MySqlADO())
         {
             return ado.NonQuery(sql, appId, openId, unionId);

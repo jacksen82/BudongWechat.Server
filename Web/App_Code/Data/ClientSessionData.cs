@@ -44,7 +44,7 @@ public class ClientSessionData
     /// <returns>int 受影响的行数</returns>
     public static int Create(int appId, string openId, string sessionKey)
     {
-        string sql = "INSERT INTO tc_client_session (appId,openId,sessionKey,session3rd) VALUES(@0,@1,@2,@3) ON DUPLICATE KEY UPDATE appId=@0 AND openId=@1 AND sessionKey=@2";
+        string sql = "INSERT INTO tc_client_session (appId,openId,sessionKey,session3rd) VALUES(@0,@1,@2,@3) ON DUPLICATE KEY UPDATE appId=VALUES(appId), openId=VALUES(openId) AND sessionKey=VALUES(sessionKey)";
         string session3rd = Guid.NewGuid().ToString().Replace("-", "");
         using (MySqlADO ado = new MySqlADO())
         {

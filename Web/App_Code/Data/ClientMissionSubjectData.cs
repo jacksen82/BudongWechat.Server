@@ -87,7 +87,7 @@ public class ClientMissionSubjectData
     /// <returns>int 受影响的行数</returns>
     public static int Add(int clientId, int missionId, string title, string tip, int categoryId, int index, string mp3Url)
     {
-        string sql = "INSERT INTO tm_mission_subject (clientId,missionId,title,tip,categoryId,`index`,mp3Url) VALUES(@0,@1,@2,@3,@4,@5,@6) ON DUPLICATE KEY UPDATE missionId=@0 AND title=@1";
+        string sql = "INSERT INTO tm_mission_subject (clientId,missionId,title,tip,categoryId,`index`,mp3Url) VALUES(@0,@1,@2,@3,@4,@5,@6) ON DUPLICATE KEY UPDATE missionId=VALUES(missionId), title=VALUES(title)";
         using (MySqlADO ado = new MySqlADO())
         {
             return ado.NonQuery(sql, clientId, missionId, title, tip, categoryId, index, mp3Url);
@@ -128,7 +128,7 @@ public class ClientMissionSubjectData
     /// <param name="subjectId">int 题目编号</param>
     public static void Clear(int subjectId)
     {
-        string sql = "DELETE FROM tm_mission_client_subject WHERE subjectId=@0;";
+        string sql = "DELETE FROM tm_mission_subject_client WHERE subjectId=@0;";
         using (MySqlADO ado = new MySqlADO())
         {
             ado.NonQuery(sql, subjectId);
