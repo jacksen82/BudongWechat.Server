@@ -14,14 +14,12 @@ public class Filter
     {
         switch (categoryId)
         {
-            case 101: return "电视剧";
+            case 101: return "电视";
             case 102: return "电影";
             case 103: return "动画";
             case 104: return "游戏";
             case 105: return "广告"; 
-            case 106: return "电视节目"; 
-            case 107: return "歌曲"; 
-            case 108: return "歌手";
+            case 106: return "音乐"; 
             default: return "其他"; 
         }
     }

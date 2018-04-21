@@ -14,7 +14,7 @@ public class ClientGroupData
     /// <returns>Hash 详细信息</returns>
     public static Hash GetByClientIdAndOpenGId(int clientId, string openGId)
     {
-        string sql = "SELECT id FROM tc_client_group WHERE clientId=@0 AND openGId=@1";
+        string sql = "SELECT * FROM tc_client_group WHERE clientId=@0 AND openGId=@1";
         using (MySqlADO ado = new MySqlADO())
         {
             return ado.GetHash(sql, clientId, openGId);

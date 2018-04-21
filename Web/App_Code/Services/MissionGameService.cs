@@ -74,10 +74,13 @@ public class MissionGameService
         if (missionClient.ToInt("missionClientId") == 0)
         {
             MissionClientData.Create(client.ToInt("id"), missionId);
-            MissionData.Update(missionId);
         }
-        MissionClientData.Clear(client.ToInt("id"), missionId);
-        MissionClientData.Update(client.ToInt("id"), missionId);
+        if (missionClient.ToInt("subjectIndex") >= mission.ToInt("subjectCount"))
+        {
+            MissionClientData.Clear(client.ToInt("id"), missionId);
+            MissionClientData.Update(client.ToInt("id"), missionId);
+        }
+        MissionData.Update(missionId);
         return MissionService.Detail(client, missionId);
     }
     /// <summary>

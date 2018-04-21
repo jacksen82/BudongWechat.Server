@@ -130,6 +130,21 @@ public class ClientMissionData
         }
     }
     /// <summary>
+    /// 更新关卡二维码信息
+    /// </summary>
+    /// <param name="missionId">int 关卡编号</param>
+    /// <param name="qrcodeId">int 二维码编号</param>
+    /// <param name="qrcodeUrl">string 二维码地址</param>
+    /// <returns>int 受影响的行数</returns>
+    public static int Update(int missionId, int qrcodeId, string qrcodeUrl)
+    {
+        string sql = "UPDATE tm_mission SET qrcodeId=@1,qrcodeUrl=@2 WHERE id=@0";
+        using (MySqlADO ado = new MySqlADO())
+        {
+            return ado.NonQuery(sql, missionId, qrcodeId, qrcodeUrl);
+        }
+    }
+    /// <summary>
     /// 删除关卡
     /// </summary>
     /// <param name="missionId">int 关卡编号</param>

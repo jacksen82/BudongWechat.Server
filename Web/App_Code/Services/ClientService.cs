@@ -142,7 +142,7 @@ public class ClientService
             {
                 ClientGroupData.Create(client.ToInt("id"), shareTicket.ToString("openGId"));
             }
-            return new Hash((int)CodeType.Unknown, "成功",shareTicket);
+            return new Hash((int)CodeType.OK, "成功", shareTicket);
         }
         return new Hash((int)CodeType.OK, "成功");
     }
@@ -155,21 +155,23 @@ public class ClientService
     /// <returns>Hash 返回结果</returns>
     public static Hash Share(Hash client, string encryptedData, string iv)
     {
+        Hash data = new Hash();
         if (!Genre.IsNull(encryptedData) && !Genre.IsNull(iv) && !client.IsNull("sessionKey"))
         {
             Hash shareTicket = API.GetEncryptedData(encryptedData, client.ToString("sessionKey"), iv);
-
             ClientShareData.Create(client.ToInt("id"), shareTicket.ToString("openGId"));
             if (!shareTicket.IsNull("openGId"))
             {
                 if (ClientGroupData.GetByClientIdAndOpenGId(client.ToInt("id"), shareTicket.ToString("openGId")).ToInt("id") == 0)
                 {
+                    data["coins"] = 100;
+                    data["balance"] = client.ToInt("balance") + 100;
                     ClientCoinService.Change(client, AvenueType.ShareToGroup, 100, "分享到群奖励");
                 }
                 ClientGroupData.Create(client.ToInt("id"), shareTicket.ToString("openGId"));
             }
         }
-        return new Hash((int)CodeType.OK, "成功");
+        return new Hash((int)CodeType.OK, "成功", data);
     }
     /// <summary>
     /// 发送客服消息

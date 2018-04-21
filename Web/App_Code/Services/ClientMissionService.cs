@@ -1,5 +1,6 @@
 ﻿using System;
 using Budong.Common.Utils;
+using Budong.Common.Third.Wechat;
 
 /// <summary>
 /// MissionService 的摘要说明

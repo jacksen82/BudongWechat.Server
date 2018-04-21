@@ -67,9 +67,9 @@ public class MissionClientData
     public static int Update(int clientId, int missionId)
     {
         string sql = "UPDATE tm_mission_client SET " +
-            "   score=(SELECT SUM(if(resultType=100,1,0)) FROM tm_mission_subject_client WHERE clientId=@0 AND missionId=@1)," +
-            "   subjectIndex=(SELECT COUNT(*) FROM tm_mission_subject_client WHERE clientId=@0 AND missionId=@1)," +
-            "   secondCount=(SELECT SUM(secondCount) FROM tm_mission_subject_client WHERE clientId=@0 AND missionId=@1) " +
+            "   score=IFNULL((SELECT SUM(if(resultType=100,1,0)) FROM tm_mission_subject_client WHERE clientId=@0 AND missionId=@1),0)," +
+            "   subjectIndex=IFNULL((SELECT COUNT(*) FROM tm_mission_subject_client WHERE clientId=@0 AND missionId=@1),0)," +
+            "   secondCount=IFNULL((SELECT SUM(secondCount) FROM tm_mission_subject_client WHERE clientId=@0 AND missionId=@1),0) " +
             "WHERE clientId=@0 AND missionId=@1";
         using (MySqlADO ado = new MySqlADO())
         {
