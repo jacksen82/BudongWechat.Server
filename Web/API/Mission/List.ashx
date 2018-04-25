@@ -8,6 +8,7 @@ public class List : IHttpHandler {
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
+        int pageId = Parse.ToInt(context.Request.Params["pageId"], 1);
         string session3rd = context.Request.Params["session3rd"];
 
         //  定义返回结果
@@ -15,7 +16,7 @@ public class List : IHttpHandler {
 
         if (result.ToInt("id") == 0)
         {
-            result = MissionService.List(result.ToHash("data"));
+            result = MissionService.List(result.ToHash("data"), pageId, Settings.PAGE_SIZE);
         }
 
         //  记录日志

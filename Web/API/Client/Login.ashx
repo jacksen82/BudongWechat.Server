@@ -8,10 +8,11 @@ public class Login : IHttpHandler {
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
+        int appId = Parse.ToInt(context.Request.Params["app3rdId"]);
         string code = context.Request.Params["code"];
-            
+
         //  定义返回结果
-        Hash result = ClientService.Login(Common.APP_ID, code);
+        Hash result = ClientService.Login(appId, code);
 
         //  返回结果
         context.Response.Write(result.ToJSON());
