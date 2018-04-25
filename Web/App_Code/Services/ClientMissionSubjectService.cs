@@ -16,7 +16,7 @@ public class ClientMissionSubjectService
     /// <returns>Hash 返回结果</returns>
     public static Hash Detail(Hash client, int subjectId)
     {
-        Hash subject = ClientMissionSubjectData.GetById(subjectId);
+        Hash subject = MissionSubjectData.GetById(subjectId);
         return new Hash((int)CodeType.OK, "成功", subject);
     }
     /// <summary>
@@ -39,20 +39,20 @@ public class ClientMissionSubjectService
         {
             return new Hash((int)CodeType.SubjectMP3Unvalid, "音频格式不对");
         }
-        if (ClientMissionSubjectData.ExistsByTitle(missionId, title, 0))
+        if (MissionSubjectData.ExistsByTitle(missionId, title, 0))
         {
             return new Hash((int)CodeType.SubjectTitleExists, "题目重复");
         }
-        int index = ClientMissionSubjectData.NewIndex(missionId);
-        string mp3Url = "/Uploads/MP3File/" + mp3file.FileName;
+        int index = MissionSubjectData.NewIndex(missionId);
+        string mp3Url = "/Uploads/MP3File/audio_" + missionId + Files.NewFileName(".mp3");
         mp3file.SaveAs(HttpContext.Current.Server.MapPath(mp3Url));
         if (!File.Exists(HttpContext.Current.Server.MapPath(mp3Url)))
         {
             return new Hash((int)CodeType.SubjectTitleExists, "文件保存失败");
         }
-        if (ClientMissionSubjectData.Add(client.ToInt("id"), missionId, title, tip, categoryId, index, mp3Url) > 0)
+        if (MissionSubjectData.Add(client.ToInt("id"), missionId, title, tip, categoryId, Filter.categoryIdToName(categoryId), index, mp3Url) > 0)
         {
-            ClientMissionService.Update(client, missionId); //  更新关卡标签及题目数量
+            MissionData.Update(missionId); //  更新关卡标签及题目数量
             return new Hash((int)CodeType.OK, "成功");
         }
         return new Hash((int)CodeType.DataBaseUnknonw, "数据库操作失败");
@@ -69,13 +69,13 @@ public class ClientMissionSubjectService
     /// <returns>Hash 返回结果</returns>
     public static Hash Edit(Hash client, int missionId, int subjectId, string title, string tip, int categoryId)
     {
-        if (ClientMissionSubjectData.ExistsByTitle(missionId, title, subjectId))
+        if (MissionSubjectData.ExistsByTitle(missionId, title, subjectId))
         {
             return new Hash((int)CodeType.SubjectTitleExists, "题目重复");
         }
-        if (ClientMissionSubjectData.Edit(subjectId, title, tip, categoryId) > 0)
+        if (MissionSubjectData.Edit(subjectId, title, tip, categoryId, Filter.categoryIdToName(categoryId)) > 0)
         {
-            ClientMissionService.Update(client, missionId); //  更新关卡标签及题目数量
+            MissionData.Update(missionId); //  更新关卡标签及题目数量
             return new Hash((int)CodeType.OK, "成功");
         }
         return new Hash((int)CodeType.DataBaseUnknonw, "数据库操作失败");
@@ -87,8 +87,8 @@ public class ClientMissionSubjectService
     /// <returns>Hash 返回结果</returns>
     public static Hash Delete(Hash client, int subjectId)
     {
-        Hash subject = ClientMissionSubjectData.GetById(subjectId);
-        if (ClientMissionSubjectData.Delete(subjectId) > 0)
+        Hash subject = MissionSubjectData.GetById(subjectId);
+        if (MissionSubjectData.Delete(subjectId) > 0)
         {
             try
             {
@@ -98,8 +98,8 @@ public class ClientMissionSubjectService
             {
 
             }
-            ClientMissionService.Update(client, subject.ToInt("missionId")); //  更新关卡标签及题目数量
-            ClientMissionSubjectData.Clear(subjectId);  //  清理题目痕迹
+            MissionData.Update(subject.ToInt("missionId")); //  更新关卡标签及题目数量
+            MissionSubjectData.Clear(subjectId);  //  清理题目痕迹
             return new Hash((int)CodeType.OK, "成功");
         }
         return new Hash((int)CodeType.DataBaseUnknonw, "数据库操作失败");

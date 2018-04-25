@@ -40,9 +40,9 @@ namespace Budong.Common.Third.Wechat
 
                 return Encoding.UTF8.GetString(plainText);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return "{}";
+                return "{ \"code\":10000, \"message\": \""+ e.ToString() +"\" }";
             }
         }
     }

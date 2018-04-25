@@ -15,8 +15,8 @@ public class ClientMissionService
     /// <returns>Hash 返回结果</returns>
     public static Hash Detail(Hash client, int missionId)
     {
-        Hash mission = ClientMissionData.GetById(missionId);
-        mission["subjects"] = ClientMissionSubjectData.List(missionId).ToHashCollection("data");
+        Hash mission = MissionData.GetById(missionId);
+        mission["subjects"] = MissionSubjectData.List(missionId).ToHashCollection("data");
         return new Hash((int)CodeType.OK, "成功", mission);
     }
     /// <summary>
@@ -27,13 +27,13 @@ public class ClientMissionService
     /// <returns>Hash 返回结果</returns>
     public static Hash Create(Hash client, string title)
     {
-        if (ClientMissionData.ExistsByTitle(title, 0))
+        if (MissionData.ExistsByTitle(title, 0))
         {
             return new Hash((int)CodeType.MissionTitleExists, "关卡重名");
         }
-        if (ClientMissionData.Create(client.ToInt("id"), title) > 0)
+        if (MissionData.Create(client.ToInt("id"), title) > 0)
         {
-            Hash mission = ClientMissionData.GetByTitle(client.ToInt("id"), title);
+            Hash mission = MissionData.GetByTitle(client.ToInt("id"), title);
             return new Hash((int)CodeType.OK, "成功", mission);
         }
         return new Hash((int)CodeType.DataBaseUnknonw, "数据库操作失败");
@@ -47,11 +47,11 @@ public class ClientMissionService
     /// <returns>Hash 返回结果</returns>
     public static Hash Edit(Hash client, int missionId, string title)
     {
-        if (ClientMissionData.ExistsByTitle(title, missionId))
+        if (MissionData.ExistsByTitle(title, missionId))
         {
             return new Hash((int)CodeType.MissionTitleExists, "关卡重名");
         }
-        if (ClientMissionData.Edit(missionId, title) > 0)
+        if (MissionData.Edit(missionId, title) > 0)
         {
             return new Hash((int)CodeType.OK, "成功");
         }
@@ -65,14 +65,7 @@ public class ClientMissionService
     /// <returns>Hash 返回结果</returns>
     public static Hash Update(Hash client, int missionId)
     {
-        int subjectCount = ClientMissionData.GetSubjectCount(missionId);
-        string tags = String.Empty;
-        object[] categoryIds = ClientMissionData.GetCategoryIds(missionId);
-        foreach (object categoryId in categoryIds)
-        {
-            tags += (String.IsNullOrEmpty(tags) ? "" : ",") + Filter.categoryIdToName(Parse.ToInt(categoryId));
-        }
-        if (ClientMissionData.Update(missionId, tags, subjectCount) > 0)
+        if (MissionData.Update(missionId) > 0)
         {
             return new Hash((int)CodeType.OK, "成功");
         }
@@ -86,14 +79,14 @@ public class ClientMissionService
     /// <returns>Hash 返回结果</returns>
     public static Hash Delete(Hash client, int missionId)
     {
-        if (ClientMissionData.Delete(missionId) > 0)
+        if (MissionData.Delete(missionId) > 0)
         {
-            HashCollection subjects = ClientMissionSubjectData.List(missionId).ToHashCollection("data");
+            HashCollection subjects = MissionSubjectData.List(missionId).ToHashCollection("data");
             foreach (Hash subject in subjects)
             {
                 ClientMissionSubjectService.Delete(client, subject.ToInt("id"));
             }
-            ClientMissionData.Clear(missionId);
+            MissionData.Clear(missionId);
             return new Hash((int)CodeType.OK, "成功");
         }
         return new Hash((int)CodeType.DataBaseUnknonw, "数据库操作失败");
@@ -105,7 +98,7 @@ public class ClientMissionService
     /// <returns>Hash 返回结果</returns>
     public static Hash List(Hash client)
     {
-        Hash missions = ClientMissionData.List(client.ToInt("id"));
+        Hash missions = MissionData.All(client.ToInt("id"));
         return new Hash((int)CodeType.OK, "成功", missions);
     }
 }

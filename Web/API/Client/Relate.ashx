@@ -8,6 +8,7 @@ public class Relate : IHttpHandler {
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
+        int missionId = Parse.ToInt(context.Request.Params["missionId"]);
         int fromClientId = Parse.ToInt(context.Request.Params["fromClientId"]);
         string encryptedData = context.Request.Params["encryptedData"];
         string iv = context.Request.Params["iv"];
@@ -18,7 +19,7 @@ public class Relate : IHttpHandler {
 
         if (result.ToInt("id") == 0)
         {
-            result = ClientService.Relate(result.ToHash("data"), fromClientId, encryptedData, iv);
+            result = ClientService.Relate(result.ToHash("data"), missionId, fromClientId, encryptedData, iv);
         }
 
         //  记录日志
