@@ -8,6 +8,7 @@ public class Share : IHttpHandler {
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
+        int missionId = Parse.ToInt(context.Request.Params["missionId"]);
         string encryptedData = context.Request.Params["encryptedData"];
         string iv = context.Request.Params["iv"];
         string session3rd = context.Request.Params["session3rd"];
@@ -17,7 +18,7 @@ public class Share : IHttpHandler {
 
         if (result.ToInt("id") == 0)
         {
-            result = ClientService.Share(result.ToHash("data"), encryptedData, iv);
+            result = ClientService.Share(result.ToHash("data"), missionId, encryptedData, iv);
         }
 
         //  记录日志

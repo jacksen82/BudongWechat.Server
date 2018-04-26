@@ -27,6 +27,7 @@ public class ClientMissionService
     /// <returns>Hash 返回结果</returns>
     public static Hash Create(Hash client, string title)
     {
+        title = Parse.ToString(title).Trim();
         if (MissionData.ExistsByTitle(title, 0))
         {
             return new Hash((int)CodeType.MissionTitleExists, "关卡重名");
@@ -47,6 +48,7 @@ public class ClientMissionService
     /// <returns>Hash 返回结果</returns>
     public static Hash Edit(Hash client, int missionId, string title)
     {
+        title = Parse.ToString(title).Trim();
         if (MissionData.ExistsByTitle(title, missionId))
         {
             return new Hash((int)CodeType.MissionTitleExists, "关卡重名");

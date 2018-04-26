@@ -29,6 +29,10 @@ public enum AvenueType : int
     /// 重听题目音频
     /// </summary>
     GameReplay = 2102,
+    /// <summary>
+    /// 闯关奖励
+    /// </summary>
+    GameSuccess = 2200,
 
     /// <summary>
     /// 未知错误

@@ -16,6 +16,7 @@ public class MissionClientData
     {
         string sql = "SELECT tm_mission.*, " +
             "   tm_mission_client.clientId AS missionClientId, " +
+            "   tm_mission_client.first, " +
             "   tm_mission_client.score, " +
             "   tm_mission_client.subjectIndex, " +
             "   tm_mission_client.secondCount " +
@@ -36,9 +37,9 @@ public class MissionClientData
         string sql = "SELECT tm_mission_client.*, " +
             "   tc_client.nick,tc_client.gender,tc_client.birthyear,tc_client.avatarUrl " +
             "FROM tm_mission_client LEFT JOIN tc_client ON tm_mission_client.clientId=tc_client.id " +
-            "WHERE tm_mission_client.missionId=@0 AND " +
+            "WHERE tm_mission_client.missionId=@0 AND tc_client.actived>0 AND " +
             "   tm_mission_client.clientId NOT IN (SELECT clientId FROM tm_mission WHERE id=@0) " +
-            "ORDER BY tm_mission_client.subjectIndex DESC, tm_mission_client.secondCount ASC ";
+            "ORDER BY tm_mission_client.score DESC, tm_mission_client.secondCount ASC, tm_mission_client.subjectIndex DESC ";
         using (MySqlADO ado = new MySqlADO())
         {
             return ado.GetHashCollection(sql, missionId);
@@ -71,6 +72,20 @@ public class MissionClientData
             "   subjectIndex=IFNULL((SELECT COUNT(*) FROM tm_mission_subject_client WHERE clientId=@0 AND missionId=@1),0)," +
             "   secondCount=IFNULL((SELECT SUM(secondCount) FROM tm_mission_subject_client WHERE clientId=@0 AND missionId=@1),0) " +
             "WHERE clientId=@0 AND missionId=@1";
+        using (MySqlADO ado = new MySqlADO())
+        {
+            return ado.NonQuery(sql, clientId, missionId);
+        }
+    }
+    /// <summary>
+    /// 设置用户关卡已不是第一次
+    /// </summary>
+    /// <param name="clientId">int 客户端编号</param>
+    /// <param name="missionId">int 关卡编号</param>
+    /// <returns>int 受影响的行数</returns>
+    public static int First(int clientId, int missionId)
+    {
+        string sql = "UPDATE tm_mission_client SET `first`=1 WHERE clientId=@0 AND missionId=@1";
         using (MySqlADO ado = new MySqlADO())
         {
             return ado.NonQuery(sql, clientId, missionId);

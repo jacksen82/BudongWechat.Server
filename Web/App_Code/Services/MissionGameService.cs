@@ -92,8 +92,28 @@ public class MissionGameService
     public static Hash Rank(Hash client, int missionId)
     {
         Hash mission = MissionClientData.GetByIdAndClientId(missionId, client.ToInt("id"));
+        HashCollection playersAll = MissionClientData.Rank(missionId).ToHashCollection("data");
+        HashCollection playersTop100 = new HashCollection();
+        MissionClientData.First(client.ToInt("id"), missionId);
+        for (int i = 0; i < playersAll.Count; i++)
+        {
+            if (i < 100 || playersAll[i].ToInt("clientId") == client.ToInt("id"))
+            {
+                playersAll[i]["index"] = i;
+                playersTop100.Add(playersAll[i]);
+            }
+        }
+        if (mission.ToInt("first") == 0)
+        {
+            mission["coins"] = mission.ToInt("score") * 10;
+            ClientCoinService.Change(client, AvenueType.GameSuccess, mission.ToInt("score") * 10, "《" + mission.ToString("title") + "》闯关成功奖励");
+        }
+        else
+        {
+            mission["coins"] = 0;
+        }
         mission["author"] = ClientData.GetById(mission.ToInt("clientId"));
-        mission["players"] = MissionClientData.Rank(missionId).ToHashCollection("data");
+        mission["players"] = playersTop100;
         return new Hash((int)CodeType.OK, "成功", mission);
     }
 }

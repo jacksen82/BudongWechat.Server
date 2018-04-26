@@ -31,6 +31,8 @@ public class ClientMissionSubjectService
     /// <returns>Hash 返回结果</returns>
     public static Hash Add(Hash client, int missionId, string title, string tip, int categoryId, HttpPostedFile mp3file)
     {
+        title = Parse.ToString(title).Trim();
+        tip = Parse.ToString(tip).Trim();
         if (mp3file == null || mp3file.InputStream == null || mp3file.ContentLength == 0)
         {
             return new Hash((int)CodeType.SubjectMP3Empty, "音频为空");
@@ -69,6 +71,8 @@ public class ClientMissionSubjectService
     /// <returns>Hash 返回结果</returns>
     public static Hash Edit(Hash client, int missionId, int subjectId, string title, string tip, int categoryId)
     {
+        title = Parse.ToString(title).Trim();
+        tip = Parse.ToString(tip).Trim();
         if (MissionSubjectData.ExistsByTitle(missionId, title, subjectId))
         {
             return new Hash((int)CodeType.SubjectTitleExists, "题目重复");

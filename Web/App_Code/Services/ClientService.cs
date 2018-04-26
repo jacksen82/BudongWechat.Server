@@ -140,7 +140,6 @@ public class ClientService
         if (!Genre.IsNull(encryptedData) && !Genre.IsNull(iv) && !client.IsNull("sessionKey"))
         {
             shareTicket = API.GetEncryptedData(encryptedData, client.ToString("sessionKey"), iv);
-            System.IO.File.AppendAllText(Files.MapPath("~/xxt.txt"), shareTicket.ToJSON());
         }
         if (!shareTicket.IsNull("openGId"))
         {
@@ -156,16 +155,17 @@ public class ClientService
     /// 客户端分享
     /// </summary>
     /// <param name="client">Hash 客户端信息</param>
+    /// <param name="missionId">int 关卡编号 </param>
     /// <param name="encryptedData">string 群标识加密信息</param>
     /// <param name="iv">string 群标识加密向量</param>
     /// <returns>Hash 返回结果</returns>
-    public static Hash Share(Hash client, string encryptedData, string iv)
+    public static Hash Share(Hash client, int missionId, string encryptedData, string iv)
     {
         Hash data = new Hash();
         if (!Genre.IsNull(encryptedData) && !Genre.IsNull(iv) && !client.IsNull("sessionKey"))
         {
             Hash shareTicket = API.GetEncryptedData(encryptedData, client.ToString("sessionKey"), iv);
-            ClientShareData.Create(client.ToInt("id"), shareTicket.ToString("openGId"));
+            ClientShareData.Create(client.ToInt("id"), missionId, shareTicket.ToString("openGId"));
             if (!shareTicket.IsNull("openGId"))
             {
                 if (ClientGroupData.GetByClientIdAndOpenGId(client.ToInt("id"), shareTicket.ToString("openGId")).ToInt("id") == 0)
