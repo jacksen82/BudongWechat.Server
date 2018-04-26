@@ -16,7 +16,7 @@ public class QrCodeService
     /// <returns>Hash 返回结果</returns>
     public static Hash Create(Hash client, string page, string scene)
     {
-        Hash accessToken = APPService.GetAccessToken(Settings.APP_ID);
+        Hash accessToken = APPService.GetAccessToken(client.ToInt("appId"));
         if (accessToken.ToInt("code") == 0)
         {
             byte[] buffer;
@@ -30,7 +30,7 @@ public class QrCodeService
             if (result.ToInt("errcode") == 0)
             {
                 Files.SaveAllBytes(Files.MapPath(qrcodeUrl), buffer);
-                APPQrCodeData.Create(Settings.APP_ID, unionId, scene, page, qrcodeUrl);
+                APPQrCodeData.Create(client.ToInt("appId"), unionId, scene, page, qrcodeUrl);
                 return new Hash((int)CodeType.OK, "成功", APPQrCodeData.GetByUnionId(unionId));
             }
             return new Hash((int)CodeType.WechatAPIError, result.ToString("errmsg"));
