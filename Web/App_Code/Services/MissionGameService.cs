@@ -103,7 +103,7 @@ public class MissionGameService
                 playersTop100.Add(playersAll[i]);
             }
         }
-        if (mission.ToInt("first") == 0)
+        if (mission.ToInt("subjectIndex")>=mission.ToInt("subjectCount") && mission.ToInt("first") == 0)
         {
             mission["coins"] = mission.ToInt("score") * 10;
             ClientCoinService.Change(client, AvenueType.GameSuccess, mission.ToInt("score") * 10, "闯关成功奖励");

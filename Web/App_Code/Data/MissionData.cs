@@ -77,7 +77,7 @@ public class MissionData
             "      (SELECT missionId, type FROM tc_client_mission where clientId=@0) "+
             "   ) mids GROUP BY missionId "+
             ") missions LEFT JOIN tm_mission ON missions.missionId=tm_mission.id LEFT JOIN tc_client ON tm_mission.clientId=tc_client.id LEFT JOIN tm_mission_client ON tm_mission.id=tm_mission_client.missionId AND tm_mission_client.clientId=@0 "+
-            "WHERE tm_mission.subjectCount>@1 " +
+            "WHERE tm_mission.subjectCount>=@1 " +
             "ORDER BY date(tm_mission.updateTime) DESC,type ASC, tm_mission.id DESC";
         using (MySqlADO ado = new MySqlADO())
         {
