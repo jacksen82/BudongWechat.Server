@@ -106,7 +106,7 @@ public class MissionGameService
         if (mission.ToInt("first") == 0)
         {
             mission["coins"] = mission.ToInt("score") * 10;
-            ClientCoinService.Change(client, AvenueType.GameSuccess, mission.ToInt("score") * 10, "《" + mission.ToString("title") + "》闯关成功奖励");
+            ClientCoinService.Change(client, AvenueType.GameSuccess, mission.ToInt("score") * 10, "闯关成功奖励");
         }
         else
         {
