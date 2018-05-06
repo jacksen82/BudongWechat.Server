@@ -1,14 +1,16 @@
-﻿<%@ WebHandler Language="C#" Class="Create" %>
+﻿<%@ WebHandler Language="C#" Class="Help" %>
 
 using System.Web;
 using Budong.Common.Utils;
 
-public class Create : IHttpHandler {
+public class Help : IHttpHandler {
 
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
-        string title = context.Request.Params["title"];
+        int subjectId = Parse.ToInt(context.Request.Params["subjectId"]);
+        int missionId = Parse.ToInt(context.Request.Params["missionId"]);
+        int fromClientId = Parse.ToInt(context.Request.Params["fromClientId"]);
         string session3rd = context.Request.Params["session3rd"];
 
         //  定义返回结果
@@ -16,7 +18,7 @@ public class Create : IHttpHandler {
 
         if (result.ToInt("code") == 0)
         {
-            result = ClientMissionService.Create(result.ToHash("data"), title);
+            result = MissionGameService.Help(result.ToHash("data"), missionId, subjectId, fromClientId);
         }
 
         //  记录日志

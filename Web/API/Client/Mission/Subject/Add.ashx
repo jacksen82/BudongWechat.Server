@@ -17,8 +17,8 @@ public class Add : IHttpHandler {
 
         //  定义返回结果
         Hash result = ClientService.Token(session3rd);
-
-        if (result.ToInt("id") == 0)
+            
+        if (result.ToInt("code") == 0)
         {
             result = ClientMissionSubjectService.Add(result.ToHash("data"), missionId, title, tip, categoryId, mp3file);
         }

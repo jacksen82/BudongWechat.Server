@@ -9,13 +9,25 @@ public enum AvenueType : int
     /// </summary>
     Register = 1100,
     /// <summary>
-    /// 分享到群，仅该群首次分享有效
+    /// 每日签到
     /// </summary>
-    ShareToGroup = 1100,
+    SignIn = 1101,
+    /// <summary>
+    /// 分享到群 [ 首次 ]
+    /// </summary>
+    ShareToGroupFirst = 1200,
+    /// <summary>
+    /// 分享到群
+    /// </summary>
+    ShareToGroup = 1201,
     /// <summary>
     /// 创建关卡
     /// </summary>
     MissionCreate = 1300,
+    /// <summary>
+    /// 邀请好友闯关
+    /// </summary>
+    MissionInvite = 1310,
 
     /// <summary>
     /// 获取提示

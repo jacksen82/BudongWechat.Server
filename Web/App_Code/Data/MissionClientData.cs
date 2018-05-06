@@ -28,21 +28,58 @@ public class MissionClientData
         }
     }
     /// <summary>
-    /// 获取关卡排行榜
+    /// 获取关卡全国排行榜
     /// </summary>
+    /// <param name="clientId">int 客户端编号</param>
     /// <param name="missionId">int 关卡编号</param>
     /// <returns>Hash 返回结果集合</returns>
-    public static Hash Rank(int missionId)
+    public static Hash RankTop10(int clientId, int missionId)
     {
         string sql = "SELECT tm_mission_client.*, " +
             "   tc_client.nick,tc_client.gender,tc_client.birthyear,tc_client.avatarUrl " +
             "FROM tm_mission_client LEFT JOIN tc_client ON tm_mission_client.clientId=tc_client.id " +
             "WHERE tm_mission_client.missionId=@0 AND tc_client.actived>0 AND " +
-            "   tm_mission_client.clientId NOT IN (SELECT clientId FROM tm_mission WHERE id=@0) " +
-            "ORDER BY tm_mission_client.score DESC, tm_mission_client.secondCount ASC, tm_mission_client.subjectIndex DESC ";
+            "   tm_mission_client.clientId!=(SELECT clientId FROM tm_mission WHERE id=@0) " +
+            "ORDER BY tm_mission_client.score DESC, tm_mission_client.secondCount ASC, tm_mission_client.subjectIndex DESC LIMIT 10";
         using (MySqlADO ado = new MySqlADO())
         {
-            return ado.GetHashCollection(sql, missionId);
+            Hash result = new Hash();
+            HashCollection data = new HashCollection();
+            HashCollection clients = ado.GetHashCollection(sql, missionId).ToHashCollection("data");
+            for (int i = 0; i < clients.Count; i++)
+            {
+                if (i < 10 || clients[i].ToInt("clientId") == clientId)
+                {
+                    clients[i]["index"] = i;
+                    data.Add(clients[i]);
+                }
+            }
+            result["data"] = data;
+            return result;
+        }
+    }
+    /// <summary>
+    /// 获取关卡好友排行榜
+    /// </summary>
+    /// <param name="clientId">int 客户端编号</param>
+    /// <param name="missionId">int 关卡编号</param>
+    /// <returns>Hash 返回结果集合</returns>
+    public static Hash RankInFriend(int clientId, int missionId)
+    {
+        string sql = "SELECT tm_mission_client.*,clients.openGId, " +
+            "   tc_client.nick,tc_client.gender,tc_client.birthyear,tc_client.avatarUrl " +
+            "FROM ( " +
+            "   SELECT clientid, openGId FROM ( " +
+            "       (SELECT friendClientId as clientId, '' as openGId FROM tc_client_friend WHERE clientId=@0) " +
+            "       UNION " +
+            "       (SELECT clientId, openGId FROM tc_client_group WHERE openGId IN (SELECT openGId FROM tc_client_group WHERE clientid=@0)) " +
+            "   ) clients GROUP BY clientId " +
+            ") clients LEFT JOIN tm_mission_client ON clients.clientid=tm_mission_client.clientId LEFT JOIN tc_client ON clients.clientId=tc_client.id " +
+            "WHERE tc_client.id>0 AND tc_client.actived>0 AND tm_mission_client.missionId=@1 AND clients.clientId!=(SELECT clientId FROM tm_mission WHERE id=@1) " +
+            "ORDER BY tm_mission_client.score DESC, tm_mission_client.secondCount ASC, tm_mission_client.subjectIndex DESC";
+        using (MySqlADO ado = new MySqlADO())
+        {
+            return ado.GetHashCollection(sql, clientId, missionId);
         }
     }
     /// <summary>

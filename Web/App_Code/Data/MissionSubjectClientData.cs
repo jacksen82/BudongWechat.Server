@@ -16,7 +16,7 @@ public class MissionSubjectClientData
     /// <returns>int 受影响的行数</returns>
     public static int Create(int clientId, int missionId, int subjectId, int resultType, int secondCount)
     {
-        string sql = "INSERT INTO tm_mission_subject_client (clientId,missionId,subjectId,resultType,secondCount) VALUES(@0,@1,@2,@3,@4) ON DUPLICATE KEY UPDATE clientId=VALUES(clientId), missionId=VALUES(missionId) AND subjectId=VALUES(subjectId)";
+        string sql = "INSERT INTO tm_mission_subject_client (clientId,missionId,subjectId,resultType,secondCount) VALUES(@0,@1,@2,@3,@4) ON DUPLICATE KEY UPDATE clientId=VALUES(clientId), missionId=VALUES(missionId), subjectId=VALUES(subjectId)";
         using (MySqlADO ado = new MySqlADO())
         {
             return ado.NonQuery(sql, clientId, missionId, subjectId, resultType, secondCount);

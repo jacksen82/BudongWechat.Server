@@ -19,7 +19,10 @@ public class ClientMissionData
         string sql = "INSERT INTO tc_client_mission (clientId,missionId,fromClientId,fromOpenGId,type) VALUES(@0,@1,@2,@3,@4) ON DUPLICATE KEY UPDATE clientId=VALUES(clientId), missionId=VALUES(missionId), fromClientId=VALUES(fromClientId), fromOpenGId=VALUES(fromOpenGId)";
         using (MySqlADO ado = new MySqlADO())
         {
-            return ado.NonQuery(sql, clientId, missionId, fromClientId, openGId, (int)(Genre.IsNull(openGId) ? RelateType.FromFriend : RelateType.FromGroup));
+            RelateType type = RelateType.FromStranger;
+            if (fromClientId > 0) { type = RelateType.FromFriend; }
+            if (!Genre.IsNull(openGId)) { type = RelateType.FromGroup; }
+            return ado.NonQuery(sql, clientId, missionId, fromClientId, openGId, (int)type);
         }
     }
 }

@@ -14,7 +14,7 @@ public class List : IHttpHandler {
         //  定义返回结果
         Hash result = ClientService.Token(session3rd);
 
-        if (result.ToInt("id") == 0)
+        if (result.ToInt("code") == 0)
         {
             result = MissionService.List(result.ToHash("data"), pageId, Settings.PAGE_SIZE);
         }

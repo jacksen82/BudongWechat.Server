@@ -17,17 +17,34 @@ public class ClientService
     {
         if (!Genre.IsNull(session3rd))
         {
+            Hash data = new Hash();
             Hash client = ClientData.GetBySession3rd(session3rd);
             Hash clientSession = ClientSessionData.GetBySession3rd(session3rd);
+            Hash clientSessionLast = ClientSessionData.GetLastByOpenId(clientSession.ToInt("appId"), clientSession.ToString("openId"));
+
             if (clientSession.ToInt("id") > 0)
             {
-                if (client.ToInt("id") > 0)
+                if (clientSessionLast.ToString("session3rd") == session3rd)
                 {
-                    client.Add("session3rd", session3rd);
-                    client.Add("sessionKey", clientSession.ToString("sessionKey"));
-                    return new Hash((int)CodeType.OK, "成功", client);
+                    if (client.ToInt("id") > 0)
+                    {
+                        //  10 天后注释下面这一段代码
+                        foreach (string key in client.Keys)
+                        {
+                            data[key] = client[key];
+                        }
+
+                        //  组织返回结果
+                        data["session3rd"] = session3rd;
+                        data["sessionKey"] = clientSession.ToString("sessionKey");
+                        data["client"] = ClientService.Detail(client).ToHash("data");
+                        data["missions"] = MissionData.List(client.ToInt("id"), 1, Settings.PAGE_SIZE);
+
+                        return new Hash((int)CodeType.OK, "成功", data);
+                    }
+                    return new Hash((int)CodeType.ClientNotExists, "client 不存在");
                 }
-                return new Hash((int)CodeType.ClientNotExists, "client 不存在");
+                return new Hash((int)CodeType.Session3rdExpire, "session3rd 已过期");
             }
             return new Hash((int)CodeType.Session3rdNotExists, "session3rd 不存在");
         }
@@ -53,30 +70,61 @@ public class ClientService
                     string unionId = wechatSession.ToString("unionid");
                     string sessionKey = wechatSession.ToString("session_key");
 
+                    Hash data = new Hash();
                     Hash client = ClientData.GetByOpenId(appId, openId);
                     Hash clientSession = ClientSessionData.GetByOpenIdAndSessionKey(appId, openId, sessionKey);
+
+                    //  初始化客户端实例
                     if (client.ToInt("id") == 0)
                     {
                         ClientData.Create(appId, openId, unionId);
                         client = ClientData.GetByOpenId(appId, openId);
-                        ClientCoinService.Change(client, AvenueType.Register, 100, "激活新用户");
+                        ClientCoinService.Change(client, AvenueType.Register, 300, "激活新用户");
                     }
+
+                    //  创建会话标识
                     if (clientSession.ToInt("id") == 0)
                     {
                         ClientSessionData.Create(appId, openId, sessionKey);
                         clientSession = ClientSessionData.GetByOpenIdAndSessionKey(appId, openId, sessionKey);
                     }
 
-                    client.Add("session3rd", clientSession.ToString("session3rd"));
-                    client.Add("sessionKey", clientSession.ToString("sessionKey"));
+                    //  10 天后注释下面这一段代码
+                    foreach (string key in client.Keys)
+                    {
+                        data[key] = client[key];
+                    }
+                    
+                    //  组织返回结果
+                    data["session3rd"] = clientSession.ToString("session3rd");
+                    data["sessionKey"] = clientSession.ToString("sessionKey");
+                    data["client"] = ClientService.Detail(client).ToHash("data");
+                    data["missions"] = MissionData.List(client.ToInt("id"), 1, Settings.PAGE_SIZE);
 
-                    return new Hash((int)CodeType.OK, "成功", client);
+                    return new Hash((int)CodeType.OK, "成功", data);
                 }
                 return new Hash((int)CodeType.CodeInvalid, wechatSession.ToString("errmsg"));
             }
             return new Hash((int)CodeType.WechatAPPNotExists, "app 不存在");
         }
         return new Hash((int)CodeType.CodeRequired, "code 为空");
+    }
+    /// <summary>
+    /// 每日签到
+    /// </summary>
+    /// <param name="client">Hash 客户端信息</param>
+    /// <returns>Hash 返回结果</returns>
+    public static Hash SignIn(Hash client)
+    {
+        Hash data = new Hash();
+        Hash last = ClientCoinData.Last(client.ToInt("id"), AvenueType.SignIn);
+        if (last.ToDateTime("createTime", DateTime.Now.AddDays(-1)) < DateTime.Today)
+        {
+            ClientCoinService.Change(client, AvenueType.SignIn, 50, "每日签到");
+            data["coins"] = 50;
+            return new Hash((int)CodeType.OK, "成功", data);
+        }
+        return new Hash((int)CodeType.ClientSignInExists, "今日已签到");
     }
     /// <summary>
     /// 获取用户资料
@@ -86,37 +134,29 @@ public class ClientService
     public static Hash Detail(Hash client)
     {
         client = ClientData.GetById(client.ToInt("id"));
+        client["signined"] = (ClientCoinData.Last(client.ToInt("id"), AvenueType.SignIn).ToDateTime("createTime", DateTime.Now.AddDays(-1)) > DateTime.Today ? 1 : 0);
+        client["missions"] = MissionData.All(client.ToInt("id")).ToHashCollection("data");
+
         return new Hash((int)CodeType.OK, "成功", client);
     }
     /// <summary>
-    /// 更新用户资料
+    /// 更新客户端资料
     /// </summary>
     /// <param name="client">Hash 客户端信息</param>
     /// <param name="nick">string 昵称</param>
     /// <param name="gender">int 性别</param>
     /// <param name="avatarUrl">string 头像</param>
+    /// <param name="birthyear">int 出生年代</param>
     /// <returns>Hash 返回结果</returns>
-    public static Hash UpdateProflie(Hash client, string nick, int gender, string avatarUrl)
+    public static Hash Update(Hash client, string nick, int gender, string avatarUrl, int birthyear)
     {
         if (ClientData.UpdateProfile(client.ToInt("id"), nick, gender, avatarUrl) > 0)
         {
-            client = ClientData.GetById(client.ToInt("id"));
-            return new Hash((int)CodeType.OK, "成功", client);
-        }
-        return new Hash((int)CodeType.DataBaseUnknonw, "数据库操作失败");
-    }
-    /// <summary>
-    /// 更新出生年代
-    /// </summary>
-    /// <param name="client">Hash 客户端信息</param>
-    /// <param name="birthyear">int 出生年代</param>
-    /// <returns>Hash 返回结果</returns>
-    public static Hash UpdateBirthyear(Hash client, int birthyear)
-    {
-        if (ClientData.UpdateBirthyear(client.ToInt("id"), birthyear) > 0)
-        {
-            client = ClientData.GetById(client.ToInt("id"));
-            return new Hash((int)CodeType.OK, "成功", client);
+            if (ClientData.UpdateBirthyear(client.ToInt("id"), birthyear) > 0)
+            {
+                client = ClientService.Detail(client).ToHash("data");
+                return new Hash((int)CodeType.OK, "成功", client);
+            }
         }
         return new Hash((int)CodeType.DataBaseUnknonw, "数据库操作失败");
     }
@@ -162,21 +202,26 @@ public class ClientService
     public static Hash Share(Hash client, int missionId, string encryptedData, string iv)
     {
         Hash data = new Hash();
+        Hash shareTicket = new Hash();
         if (!Genre.IsNull(encryptedData) && !Genre.IsNull(iv) && !client.IsNull("sessionKey"))
         {
-            Hash shareTicket = API.GetEncryptedData(encryptedData, client.ToString("sessionKey"), iv);
-            ClientShareData.Create(client.ToInt("id"), missionId, shareTicket.ToString("openGId"));
-            if (!shareTicket.IsNull("openGId"))
-            {
-                if (ClientGroupData.GetByClientIdAndOpenGId(client.ToInt("id"), shareTicket.ToString("openGId")).ToInt("id") == 0)
-                {
-                    data["coins"] = 100;
-                    data["balance"] = client.ToInt("balance") + 100;
-                    ClientCoinService.Change(client, AvenueType.ShareToGroup, 100, "分享到群奖励");
-                }
-                ClientGroupData.Create(client.ToInt("id"), shareTicket.ToString("openGId"));
-            }
+            shareTicket = API.GetEncryptedData(encryptedData, client.ToString("sessionKey"), iv);
         }
+        if (!shareTicket.IsNull("openGId"))
+        {
+            if (ClientGroupData.GetByClientIdAndOpenGId(client.ToInt("id"), shareTicket.ToString("openGId")).ToInt("id") == 0)
+            {
+                data["coins"] = 100;
+                ClientCoinService.Change(client, AvenueType.ShareToGroupFirst, 100, "分享到群奖励");
+            }
+            else
+            {
+                data["coins"] = 10;
+                ClientCoinService.Change(client, AvenueType.ShareToGroup, 10, "分享到群奖励");
+            }
+            ClientGroupData.Create(client.ToInt("id"), shareTicket.ToString("openGId"));
+        }
+        ClientShareData.Create(client.ToInt("id"), missionId, shareTicket.ToString("openGId"));
         return new Hash((int)CodeType.OK, "成功", data);
     }
     /// <summary>

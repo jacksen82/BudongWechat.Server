@@ -1,24 +1,22 @@
-﻿<%@ WebHandler Language="C#" Class="updateProfile" %>
+﻿<%@ WebHandler Language="C#" Class="Complete" %>
 
 using System.Web;
 using Budong.Common.Utils;
 
-public class updateProfile : IHttpHandler {
+public class Complete : IHttpHandler {
 
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
-        int gender = Parse.ToInt(context.Request.Params["gender"]);
-        string nick = context.Request.Params["nick"];
-        string avatarUrl = context.Request.Params["avatarUrl"];
+        int missionId = Parse.ToInt(context.Request.Params["missionId"]);
         string session3rd = context.Request.Params["session3rd"];
 
         //  定义返回结果
         Hash result = ClientService.Token(session3rd);
 
-        if (result.ToInt("id") == 0)
+        if (result.ToInt("code") == 0)
         {
-            result = ClientService.UpdateProflie(result.ToHash("data"), nick, gender, avatarUrl);
+            result = MissionGameService.Complete(result.ToHash("data"), missionId);
         }
 
         //  记录日志

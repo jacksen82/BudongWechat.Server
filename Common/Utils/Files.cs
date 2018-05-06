@@ -28,6 +28,18 @@ namespace Budong.Common.Utils
             return HttpContext.Current.Server.MapPath(fileUrl);
         }
         /// <summary>
+        /// 根据虚拟地址删除文件
+        /// </summary>
+        /// <param name="fileUrl">string 虚拟地址</param>
+        public static void Delete(string fileUrl)
+        {
+            try
+            {
+                File.Delete(MapPath(fileUrl));
+            }
+            catch { }
+        }
+        /// <summary>
         /// 保存二级制数据至文件
         /// </summary>
         /// <param name="filePath">string 文件路径(绝对路径)</param>

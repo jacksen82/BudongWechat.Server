@@ -15,7 +15,7 @@ public class Skip : IHttpHandler {
         //  定义返回结果
         Hash result = ClientService.Token(session3rd);
 
-        if (result.ToInt("id") == 0)
+        if (result.ToInt("code") == 0)
         {
             result = MissionGameService.Skip(result.ToHash("data"), subjectId, secondCount);
         }

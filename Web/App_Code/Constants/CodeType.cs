@@ -46,6 +46,10 @@ public enum CodeType : int
     /// </summary>
     Session3rdNotExists = 1023,
     /// <summary>
+    /// SessionCode 已过期
+    /// </summary>
+    Session3rdExpire = 1024,
+    /// <summary>
     /// 微信小程序接口错误
     /// </summary>
     WechatDecrypt = 2001,
@@ -74,6 +78,10 @@ public enum CodeType : int
     /// </summary>
     ClientInaction = 2031,
     /// <summary>
+    /// 今日已签到
+    /// </summary>
+    ClientSignInExists = 2041,
+    /// <summary>
     /// 账户变动金额不能为零
     /// </summary>
     CoinZero = 2101,
@@ -82,6 +90,10 @@ public enum CodeType : int
     /// 关卡重名
     /// </summary>
     MissionTitleExists = 5001,
+    /// <summary>
+    /// 关卡封面格式不对
+    /// </summary>
+    MissionLogoUnvalid = 5002,
 
     /// <summary>
     /// 题目重复

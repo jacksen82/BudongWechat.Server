@@ -11,13 +11,14 @@ public class Edit : IHttpHandler {
         int missionId = Parse.ToInt(context.Request.Params["missionId"]);
         string title = context.Request.Params["title"];
         string session3rd = context.Request.Params["session3rd"];
+        HttpPostedFile logofile = context.Request.Files["logofile"];
 
         //  定义返回结果
         Hash result = ClientService.Token(session3rd);
 
-        if (result.ToInt("id") == 0)
+        if (result.ToInt("code") == 0)
         {
-            result = ClientMissionService.Edit(result.ToHash("data"), missionId, title);
+            result = ClientMissionService.Edit(result.ToHash("data"), missionId, title, logofile);
         }
 
         //  记录日志

@@ -69,19 +69,19 @@ public class MissionData
     /// <returns>Hash 返回结果集合</returns>
     public static Hash List(int clientId, int pageId, int pageSize)
     {
-        string sql = "SELECT tm_mission.*,tc_client.id AS authorId,tc_client.nick,tc_client.gender,tc_client.birthyear,tc_client.avatarUrl,tm_mission_client.clientId AS missionClientId,tm_mission_client.score,tm_mission_client.subjectIndex,tm_mission_client.secondCount " +
+        string sql = "SELECT tm_mission.*,missions.type,tc_client.id AS authorId,tc_client.nick,tc_client.gender,tc_client.birthyear,tc_client.avatarUrl,tm_mission_client.clientId AS missionClientId,tm_mission_client.score,tm_mission_client.subjectIndex,tm_mission_client.secondCount " +
             "FROM (" +
             "   SELECT missionId, MIN(type) AS type FROM( "+
-            "      (SELECT id AS missionId, 301 AS type FROM tm_mission WHERE clientId=@0 OR grade>0) "+
+            "      (SELECT id AS missionId, if(clientId=@0,@3,if(recommend>0,@4,@5)) AS type FROM tm_mission WHERE (clientId=@0) OR ( (recommend>0 OR winnerCount>=@2) AND subjectCount>=@1 )) " +
             "      UNION "+
-            "      (SELECT missionId, type FROM tc_client_mission where clientId=@0) "+
+            "      (SELECT missionId, if(fromClientId=@0,@3,type) FROM tc_client_mission where clientId=@0 AND fromClientId!=@0) " +
             "   ) mids GROUP BY missionId "+
             ") missions LEFT JOIN tm_mission ON missions.missionId=tm_mission.id LEFT JOIN tc_client ON tm_mission.clientId=tc_client.id LEFT JOIN tm_mission_client ON tm_mission.id=tm_mission_client.missionId AND tm_mission_client.clientId=@0 "+
-            "WHERE tm_mission.subjectCount>=@1 " +
-            "ORDER BY date(tm_mission.updateTime) DESC,type ASC, tm_mission.id DESC";
+            "WHERE tm_mission.id>0 " + 
+            "ORDER BY date(tm_mission.updateTime) DESC,type ASC, tm_mission.updateTime DESC";
         using (MySqlADO ado = new MySqlADO())
         {
-            return ado.GetHashCollectionByPageId(sql, pageId, pageSize, clientId, Settings.MIN_SUBJECT_COUNT);
+            return ado.GetHashCollectionByPageId(sql, pageId, pageSize, clientId, Settings.MIN_SUBJECT_COUNT, Settings.MIN_WINNER_COUNT, (int) RelateType.FromSelf, (int) RelateType.FromRecommend, (int) RelateType.FromHot);
         }
     }
     /// <summary>
@@ -89,13 +89,14 @@ public class MissionData
     /// </summary>
     /// <param name="clientId">int 客户端编号</param>
     /// <param name="title">string 关卡标题</param>
+    /// <param name="logoUrl">string 关卡封面</param>
     /// <returns>int 受影响的行数</returns>
-    public static int Create(int clientId, string title)
+    public static int Create(int clientId, string title, string logoUrl)
     {
-        string sql = "INSERT INTO tm_mission (clientId,title) VALUES(@0,@1) ON DUPLICATE KEY UPDATE title=VALUES(title)";
+        string sql = "INSERT INTO tm_mission (clientId,title,logoUrl) VALUES(@0,@1,@2) ON DUPLICATE KEY UPDATE title=VALUES(title)";
         using (MySqlADO ado = new MySqlADO())
         {
-            return ado.NonQuery(sql, clientId, title);
+            return ado.NonQuery(sql, clientId, title, logoUrl);
         }
     }
     /// <summary>
@@ -103,13 +104,14 @@ public class MissionData
     /// </summary>
     /// <param name="missionId">int 关卡编号</param>
     /// <param name="title">string 关卡标题</param>
+    /// <param name="logoUrl">string 关卡封面</param>
     /// <returns>int 受影响的行数</returns>
-    public static int Edit(int missionId, string title)
+    public static int Edit(int missionId, string title, string logoUrl)
     {
-        string sql = "UPDATE tm_mission SET title=@1 WHERE id=@0";
+        string sql = "UPDATE tm_mission SET title=@1,logoUrl=@2 WHERE id=@0";
         using (MySqlADO ado = new MySqlADO())
         {
-            return ado.NonQuery(sql, missionId, title);
+            return ado.NonQuery(sql, missionId, title, logoUrl);
         }
     }
     /// <summary>
@@ -121,8 +123,9 @@ public class MissionData
     {
          string sql = "UPDATE tm_mission SET " +
             "   tags=(SELECT GROUP_CONCAT(categoryName separator ',') FROM (SELECT categoryName FROM tm_mission_subject WHERE missionId =@0 GROUP BY categoryId ORDER BY COUNT(*) DESC) TAGS), " +
+            "   subjectCount=IFNULL((SELECT COUNT(*) FROM tm_mission_subject WHERE missionId=@0),0), " +
             "   playerCount=IFNULL((SELECT COUNT(*) FROM tm_mission_client WHERE missionId=@0 AND clientId!=tm_mission.clientId),0), " +
-            "   subjectCount=IFNULL((SELECT COUNT(*) FROM tm_mission_subject WHERE missionId=@0),0) " +
+            "   winnerCount=IFNULL((SELECT COUNT(*) FROM tm_mission_client WHERE missionId=@0 AND clientId!=tm_mission.clientId AND score>=tm_mission.subjectCount),0) " +
             "WHERE id=@0";
         using (MySqlADO ado = new MySqlADO())
         {

@@ -46,7 +46,7 @@ public class ClientMissionSubjectService
             return new Hash((int)CodeType.SubjectTitleExists, "题目重复");
         }
         int index = MissionSubjectData.NewIndex(missionId);
-        string mp3Url = "/Uploads/MP3File/audio_" + missionId + Files.NewFileName(".mp3");
+        string mp3Url = "/Uploads/MP3File/audio_" + missionId + "_" + Files.NewFileName(".mp3");
         mp3file.SaveAs(HttpContext.Current.Server.MapPath(mp3Url));
         if (!File.Exists(HttpContext.Current.Server.MapPath(mp3Url)))
         {
@@ -94,14 +94,7 @@ public class ClientMissionSubjectService
         Hash subject = MissionSubjectData.GetById(subjectId);
         if (MissionSubjectData.Delete(subjectId) > 0)
         {
-            try
-            {
-                File.Delete(HttpContext.Current.Server.MapPath(subject.ToString("mp3Url")));
-            }
-            catch
-            {
-
-            }
+            Files.Delete(subject.ToString("mp3Url"));
             MissionData.Update(subject.ToInt("missionId")); //  更新关卡标签及题目数量
             MissionSubjectData.Clear(subjectId);  //  清理题目痕迹
             return new Hash((int)CodeType.OK, "成功");

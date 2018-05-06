@@ -1,22 +1,21 @@
-﻿<%@ WebHandler Language="C#" Class="UpdateBirthyear" %>
+﻿<%@ WebHandler Language="C#" Class="SignIn" %>
 
 using System.Web;
 using Budong.Common.Utils;
 
-public class UpdateBirthyear : IHttpHandler {
+public class SignIn : IHttpHandler {
 
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
-        int birthyear = Parse.ToInt(context.Request.Params["birthyear"]);
         string session3rd = context.Request.Params["session3rd"];
 
         //  定义返回结果
         Hash result = ClientService.Token(session3rd);
 
-        if (result.ToInt("id") == 0)
+        if (result.ToInt("code") == 0)
         {
-            result = ClientService.UpdateBirthyear(result.ToHash("data"), birthyear);
+            result = ClientService.SignIn(result.ToHash("data"));
         }
 
         //  记录日志

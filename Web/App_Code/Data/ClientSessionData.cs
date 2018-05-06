@@ -21,6 +21,20 @@ public class ClientSessionData
         }
     }
     /// <summary>
+    /// 根据应用编号及 OpenId 获取最后一个有效的 SessionKey
+    /// </summary>
+    /// <param name="appId">int 应用编号</param>
+    /// <param name="openId">string 微信标识</param>
+    /// <returns>Hash 操作结果</returns>
+    public static Hash GetLastByOpenId(int appId, string openId)
+    {
+        string sql = "SELECT * FROM tc_client_session WHERE appId=@0 AND openId=@1 ORDER BY createTime DESC LIMIT 1";
+        using (MySqlADO ado = new MySqlADO())
+        {
+            return ado.GetHash(sql, appId, openId);
+        }
+    }
+    /// <summary>
     /// 获取会员信息
     /// </summary>
     /// <param name="appId">int 应用编号</param>

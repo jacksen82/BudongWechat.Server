@@ -9,11 +9,27 @@ using System.Web;
 public enum RelateType: int
 {
     /// <summary>
+    /// 来自自己
+    /// </summary>
+    FromSelf = 101,
+    /// <summary>
     /// 好友分享
     /// </summary>
-    FromFriend = 101,
+    FromFriend = 201,
     /// <summary>
     /// 群分享
     /// </summary>
-    FromGroup = 201
+    FromGroup = 301,
+    /// <summary>
+    /// 来自推荐
+    /// </summary>
+    FromRecommend = 401,
+    /// <summary>
+    /// 来自热门
+    /// </summary>
+    FromHot = 501,
+    /// <summary>
+    /// 陌生人
+    /// </summary>
+    FromStranger = 901
 }

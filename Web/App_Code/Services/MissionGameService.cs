@@ -48,6 +48,23 @@ public class MissionGameService
         return new Hash((int)CodeType.OK, "成功");
     }
     /// <summary>
+    /// 获取题目信息
+    /// </summary>
+    /// <param name="client">Hash 客户端信息</param>
+    /// <param name="missionId">int 关卡编号</param>
+    /// <param name="subjectId">int 题目编号</param>
+    /// <param name="fromClientId">int 来源客户端编号</param>
+    /// <returns>Hash 返回结果</returns>
+    public static Hash Help(Hash client, int missionId, int subjectId, int fromClientId)
+    {
+        Hash mission = MissionData.GetById(missionId);
+        Hash subject = MissionSubjectData.GetById(subjectId);
+        mission["subject"] = subject;
+        mission["author"] = ClientData.GetById(mission.ToInt("clientId"));
+        mission["fromClient"] = ClientData.GetById(fromClientId);
+        return new Hash((int)CodeType.OK, "成功", mission);
+    }
+    /// <summary>
     /// 答题成功
     /// </summary>
     /// <param name="client">Hash 客户端信息</param>
@@ -62,6 +79,30 @@ public class MissionGameService
         return new Hash((int)CodeType.OK, "成功");
     }
     /// <summary>
+    /// 完成关卡
+    /// </summary>
+    /// <param name="client">Hash 客户端信息</param>
+    /// <param name="missionId">int 关卡编号</param>
+    /// <returns>Hash 返回结果</returns>
+    public static Hash Complete(Hash client, int missionId)
+    {
+        Hash data = new Hash();
+        Hash mission = MissionClientData.GetByIdAndClientId(missionId, client.ToInt("id"));
+        MissionClientData.First(client.ToInt("id"), missionId);
+        if (mission.ToInt("clientId") != client.ToInt("id") && 
+            mission.ToInt("subjectIndex") >= mission.ToInt("subjectCount") && 
+            mission.ToInt("first") == 0)
+        {
+            data["coins"] = mission.ToInt("score") * 10;
+            ClientCoinService.Change(client, AvenueType.GameSuccess, mission.ToInt("score") * 10, "闯关成功奖励");
+        }
+        else
+        {
+            data["coins"] = 0;
+        }
+        return new Hash((int)CodeType.OK, "成功", data);
+    }
+    /// <summary>
     /// 开始关卡
     /// </summary>
     /// <param name="client">Hash 客户端信息</param>
@@ -71,7 +112,7 @@ public class MissionGameService
     {
         Hash mission = MissionData.GetById(missionId);
         Hash missionClient = MissionClientData.GetByIdAndClientId(missionId, client.ToInt("id"));
-        if (missionClient.ToInt("missionClientId") == 0)
+        if (missionClient.ToInt("missionClientId") == 0) 
         {
             MissionClientData.Create(client.ToInt("id"), missionId);
         }
@@ -92,28 +133,13 @@ public class MissionGameService
     public static Hash Rank(Hash client, int missionId)
     {
         Hash mission = MissionClientData.GetByIdAndClientId(missionId, client.ToInt("id"));
-        HashCollection playersAll = MissionClientData.Rank(missionId).ToHashCollection("data");
-        HashCollection playersTop100 = new HashCollection();
-        MissionClientData.First(client.ToInt("id"), missionId);
-        for (int i = 0; i < playersAll.Count; i++)
-        {
-            if (i < 100 || playersAll[i].ToInt("clientId") == client.ToInt("id"))
-            {
-                playersAll[i]["index"] = i;
-                playersTop100.Add(playersAll[i]);
-            }
-        }
-        if (mission.ToInt("subjectIndex")>=mission.ToInt("subjectCount") && mission.ToInt("first") == 0)
-        {
-            mission["coins"] = mission.ToInt("score") * 10;
-            ClientCoinService.Change(client, AvenueType.GameSuccess, mission.ToInt("score") * 10, "闯关成功奖励");
-        }
-        else
-        {
-            mission["coins"] = 0;
-        }
+        HashCollection playersTop10 = MissionClientData.RankTop10(client.ToInt("id"), missionId).ToHashCollection("data");
+        HashCollection playersInFriend= MissionClientData.RankInFriend(client.ToInt("id"), missionId).ToHashCollection("data");
+
         mission["author"] = ClientData.GetById(mission.ToInt("clientId"));
-        mission["players"] = playersTop100;
+        mission["players"] = playersTop10;
+        mission["playersTop10"] = playersTop10;
+        mission["playersInFriend"] = playersInFriend;
         return new Hash((int)CodeType.OK, "成功", mission);
     }
 }
