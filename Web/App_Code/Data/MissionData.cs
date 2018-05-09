@@ -85,6 +85,24 @@ public class MissionData
         }
     }
     /// <summary>
+    /// 获取待审核关卡列表
+    /// </summary>
+    /// <param name="clientId">int 客户端编号</param>
+    /// <param name="pageId">int 页码</param>
+    /// <param name="pageSize">int 页尺寸</param>
+    /// <returns>Hash 返回结果集合</returns>
+    public static Hash More(int clientId, int pageId, int pageSize)
+    {
+        string sql = "SELECT tm_mission.*,0 AS type,tc_client.id AS authorId,tc_client.nick,tc_client.gender,tc_client.birthyear,tc_client.avatarUrl,tm_mission_client.clientId AS missionClientId,tm_mission_client.score,tm_mission_client.subjectIndex,tm_mission_client.secondCount " +
+            "FROM tm_mission LEFT JOIN tc_client ON tm_mission.clientId=tc_client.id LEFT JOIN tm_mission_client ON tm_mission.id=tm_mission_client.missionId AND tm_mission_client.clientId=@0 " +
+            "WHERE tm_mission.id>0 AND tm_mission.recommend=0 AND tm_mission.subjectCount>0 " +
+            "ORDER BY tm_mission.updateTime DESC";
+        using (MySqlADO ado = new MySqlADO())
+        {
+            return ado.GetHashCollectionByPageId(sql, pageId, pageSize, clientId);
+        }
+    }
+    /// <summary>
     /// 创建新关卡
     /// </summary>
     /// <param name="clientId">int 客户端编号</param>

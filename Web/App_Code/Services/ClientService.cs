@@ -79,7 +79,7 @@ public class ClientService
                     {
                         ClientData.Create(appId, openId, unionId);
                         client = ClientData.GetByOpenId(appId, openId);
-                        ClientCoinService.Change(client, AvenueType.Register, 300, "激活新用户");
+                        ClientCoinService.Change(client, AvenueType.Register, 100, "激活新用户");
                     }
 
                     //  创建会话标识
