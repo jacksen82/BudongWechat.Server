@@ -1,14 +1,16 @@
-﻿<%@ WebHandler Language="C#" Class="Share" %>
+﻿<%@ WebHandler Language="C#" Class="SetUserInfo" %>
 
 using System.Web;
 using Budong.Common.Utils;
 
-public class Share : IHttpHandler {
+public class SetUserInfo : IHttpHandler {
 
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
-        string shareFrom = context.Request.Params["shareFrom"];
+        int gender = Parse.ToInt(context.Request.Params["gender"]);
+        string nick = context.Request.Params["nick"];
+        string avatarUrl = context.Request.Params["avatarUrl"];
         string session3rd = context.Request.Params["session3rd"];
 
         //  定义返回结果
@@ -16,7 +18,7 @@ public class Share : IHttpHandler {
 
         if (result.ToInt("code") == 0)
         {
-            result = ClientShareService.Share(result.ToHash("data"), shareFrom);
+            result = ClientService.SetUserInfo(result.ToHash("data"), nick, gender, avatarUrl);
         }
 
         //  记录日志

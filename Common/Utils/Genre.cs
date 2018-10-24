@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using System.Text.RegularExpressions;
+using System.Web;
 
 namespace Budong.Common.Utils
 {
@@ -73,7 +73,11 @@ namespace Budong.Common.Utils
         {
             if (obj > 10000000000 && obj < 19900000000)
             {
-                return true;
+                int[] prefix = { 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 147, 150, 151, 152, 153, 155, 156, 157, 158, 159, 180, 187, 188, 185, 186, 189 };
+                if (Array.IndexOf(prefix, (obj / 100000000)) > -1)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -85,6 +89,54 @@ namespace Budong.Common.Utils
         public static int Length(string str)
         {
             return Encoding.Default.GetBytes(str).Length;
+        }
+        /// <summary>
+        /// 获取随机数
+        /// </summary>
+        /// <param name="length">int 长度</param>
+        /// <param name="mode">int 模式</param>
+        /// <returns>string 随机数</returns>
+        public static string GetRandom(int length, int mode = 0)
+        {
+            string result = String.Empty;
+            string allChar = "0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z";
+            string[] allCharArray;
+            Random random = new Random();
+            if (mode == 101)
+            {
+                allChar = "0,1,2,3,4,5,6,7,8,9";
+            }
+            allCharArray = allChar.Split(',');
+            for (int i = 0; i < length; i++)
+            {
+                result += allCharArray[random.Next(allCharArray.Length)];
+            }
+            return result;
+        }
+        /// <summary>
+        /// 获取客户端 IP 地址
+        /// </summary>
+        /// <returns>string IP 地址</returns>
+        public static string GetAddress()
+        {
+            if (String.IsNullOrEmpty(HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"]))
+            {
+                return HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+            }
+            else
+            {
+                return HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+            }
+        }
+        /// <summary>
+        /// 获取微信时间戳
+        /// </summary>
+        /// <param name="datetime">DateTime 时间</param>
+        /// <returns>string 时间戳</returns>
+        public static string GetTimeStamp(DateTime datetime)
+        {
+            TimeSpan timeStamp = datetime - DateTime.Parse("1970-01-01");
+            return Math.Floor(timeStamp.TotalSeconds).ToString();
         }
     }
 }

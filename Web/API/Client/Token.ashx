@@ -9,12 +9,12 @@ public class Token : IHttpHandler {
     {
         //  格式化参数
         string session3rd = context.Request.Params["session3rd"];
-            
+
         //  定义返回结果
         Hash result = ClientService.Token(session3rd);
 
         //  记录日志
-        ClientService.Log(session3rd);
+        ClientLogService.Append(session3rd);
 
         //  返回结果
         context.Response.Write(result.ToJSON());

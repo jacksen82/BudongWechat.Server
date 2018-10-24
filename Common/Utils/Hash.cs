@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using System.Web.Script.Serialization;
+using System.Xml;
 
 namespace Budong.Common.Utils
 {
@@ -213,6 +215,21 @@ namespace Budong.Common.Utils
             return serializer.Serialize(this);
         }
         /// <summary>
+        /// 转换为 XML 字符串
+        /// </summary>
+        /// <returns>string XML 字符串</returns>
+        public string ToXML()
+        {
+            StringBuilder xmlString = new StringBuilder();
+            xmlString.Append("<xml>");
+            foreach (string key in this.Keys)
+            {
+                xmlString.Append("<" + key + ">" + this[key] + "</" + key + ">");
+            }
+            xmlString.Append("</xml>");
+            return xmlString.ToString();
+        }
+        /// <summary>
         /// 返回序列化字符串
         /// </summary>
         /// <returns>string 序列化字符串</returns>
@@ -224,6 +241,23 @@ namespace Budong.Common.Utils
                 items.Add(this.GetKey(i) + "=" + this[this.GetKey(i)]);
             }
             return String.Join("&", items.ToArray());
+        }
+        /// <summary>
+        /// 从 XML 文件中获取 Hash 
+        /// </summary>
+        /// <param name="xml">string xml 内容</param>
+        /// <returns>Hash 详细信息</returns>
+        public static Hash FromXML(string xml)
+        {
+            Utils.Hash hashResult = new Utils.Hash();
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(xml);
+            XmlElement root = doc.DocumentElement;
+            foreach (XmlElement node in root.ChildNodes)
+            {
+                hashResult.Add(node.Name, node.InnerText);
+            }
+            return hashResult;
         }
 
         #region 私有方法

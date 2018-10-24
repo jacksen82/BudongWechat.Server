@@ -1,35 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
+﻿
 /// <summary>
-/// 关联类型
+/// 关系类型
 /// </summary>
-public enum RelateType: int
+public enum RelateType : int
 {
     /// <summary>
-    /// 来自自己
+    /// 未知
     /// </summary>
-    FromSelf = 101,
+    Unknown = 0,
     /// <summary>
-    /// 好友分享
+    /// 来自好友
     /// </summary>
-    FromFriend = 201,
+    FromFriend = 1001,
     /// <summary>
-    /// 群分享
+    /// 来自群
     /// </summary>
-    FromGroup = 301,
-    /// <summary>
-    /// 来自推荐
-    /// </summary>
-    FromRecommend = 401,
-    /// <summary>
-    /// 来自热门
-    /// </summary>
-    FromHot = 501,
-    /// <summary>
-    /// 陌生人
-    /// </summary>
-    FromStranger = 901
+    FromGroup = 2001
 }

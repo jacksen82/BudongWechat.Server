@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace Budong.Common.Secret
 {
@@ -15,10 +16,17 @@ namespace Budong.Common.Secret
         /// <returns>string 加密结果</returns>
         public static string Encode(string text)
         {
-            byte[] input = Encoding.Default.GetBytes(text);
             System.Security.Cryptography.MD5 md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
-            byte[] output = md5.ComputeHash(input);
-            return BitConverter.ToString(output).Replace("-", "");
+            byte[] fromData = System.Text.Encoding.UTF8.GetBytes(text);
+            byte[] targetData = md5.ComputeHash(fromData);
+            string byte2String = null;
+
+            for (int i = 0; i < targetData.Length; i++)
+            {
+                byte2String += targetData[i].ToString("x2");
+            }
+
+            return byte2String;
         }
     }
 }

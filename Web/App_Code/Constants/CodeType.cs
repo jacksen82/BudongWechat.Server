@@ -6,7 +6,7 @@ public enum CodeType : int
 {
     /// <summary>
     /// 成功
-    /// </summary>
+    /// </summary>  
     OK = 0,
 
     /// <summary>
@@ -68,47 +68,36 @@ public enum CodeType : int
     /// <summary>
     /// 客户端不存在
     /// </summary>
-    ClientRequired = 2021,
+    ClientRequired = 3021,
     /// <summary>
     /// 客户端不存在
     /// </summary>
-    ClientNotExists = 2022,
+    ClientNotExists = 3022,
     /// <summary>
     /// 客户端不活跃
     /// </summary>
-    ClientInaction = 2031,
+    ClientInaction = 3031,
     /// <summary>
-    /// 今日已签到
+    /// 客户端被禁用
     /// </summary>
-    ClientSignInExists = 2041,
+    ClientDisabled = 3032,
     /// <summary>
-    /// 账户变动金额不能为零
+    /// 客户端关系编号不存在
     /// </summary>
-    CoinZero = 2101,
-
+    ClientRelateRequired = 3041,
     /// <summary>
-    /// 关卡重名
+    /// 客户端关系不能为自己
     /// </summary>
-    MissionTitleExists = 5001,
+    ClientRelateInvalid = 3042,
     /// <summary>
-    /// 关卡封面格式不对
+    /// 客户端没有可用复活卡
     /// </summary>
-    MissionLogoUnvalid = 5002,
-
+    ClientHaveNotCard = 3101,
     /// <summary>
-    /// 题目重复
+    /// 没有题目了
     /// </summary>
-    SubjectTitleExists = 5101,
-    /// <summary>
-    /// 音频文件为空
-    /// </summary>
-    SubjectMP3Empty = 5111,
-    /// <summary>
-    /// 音频格式不对
-    /// </summary>
-    SubjectMP3Unvalid = 5112,
-
-
+    GameDinosaurEnd = 4001,
+    
     /// <summary>
     /// 数据库未知错误
     /// </summary>

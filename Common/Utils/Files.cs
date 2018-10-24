@@ -10,6 +10,15 @@ namespace Budong.Common.Utils
     public class Files
     {
         /// <summary>
+        /// 判断文件是否存在
+        /// </summary>
+        /// <param name="filePath">string 文件路径</param>
+        /// <returns>bool 是否存在</returns>
+        public static bool Exists(string filePath)
+        {
+            return File.Exists(filePath);
+        }
+        /// <summary>
         /// 以时间戳生成文件名
         /// </summary>
         /// <param name="extension">string 扩展名(带.)</param>
@@ -26,6 +35,19 @@ namespace Budong.Common.Utils
         public static string MapPath(string fileUrl)
         {
             return HttpContext.Current.Server.MapPath(fileUrl);
+        }
+        /// <summary>
+        /// 获取文件后缀名
+        /// </summary>
+        /// <param name="filePath">string 文件路径</param>
+        /// <returns>string 后缀名 ( 不带 . )</returns>
+        public static string GetExtension(string filePath)
+        {
+            if (Genre.IsNull(filePath))
+            {
+                return String.Empty;
+            }
+            return Path.GetExtension(filePath);
         }
         /// <summary>
         /// 根据虚拟地址删除文件

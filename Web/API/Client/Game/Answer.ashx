@@ -1,14 +1,15 @@
-﻿<%@ WebHandler Language="C#" Class="Share" %>
+﻿<%@ WebHandler Language="C#" Class="Answer" %>
 
 using System.Web;
 using Budong.Common.Utils;
 
-public class Share : IHttpHandler {
+public class Answer : IHttpHandler {
 
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
-        string shareFrom = context.Request.Params["shareFrom"];
+        int dinosaurId = Parse.ToInt(context.Request.Params["dinosaurId"]);
+        int _result  = Parse.ToInt(context.Request.Params["result"]);
         string session3rd = context.Request.Params["session3rd"];
 
         //  定义返回结果
@@ -16,7 +17,7 @@ public class Share : IHttpHandler {
 
         if (result.ToInt("code") == 0)
         {
-            result = ClientShareService.Share(result.ToHash("data"), shareFrom);
+            result = GameService.Answer(result.ToHash("data"), dinosaurId, _result);
         }
 
         //  记录日志

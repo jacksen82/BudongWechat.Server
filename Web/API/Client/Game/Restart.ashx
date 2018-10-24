@@ -1,14 +1,13 @@
-﻿<%@ WebHandler Language="C#" Class="Share" %>
+﻿<%@ WebHandler Language="C#" Class="Restart" %>
 
 using System.Web;
 using Budong.Common.Utils;
 
-public class Share : IHttpHandler {
+public class Restart : IHttpHandler {
 
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
-        string shareFrom = context.Request.Params["shareFrom"];
         string session3rd = context.Request.Params["session3rd"];
 
         //  定义返回结果
@@ -16,7 +15,7 @@ public class Share : IHttpHandler {
 
         if (result.ToInt("code") == 0)
         {
-            result = ClientShareService.Share(result.ToHash("data"), shareFrom);
+            result = GameService.Restart(result.ToHash("data"));
         }
 
         //  记录日志
