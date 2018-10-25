@@ -42,9 +42,9 @@ public class GameService
     public static Hash Assign(Hash token)
     {
         Random random = new Random();
-        Hash data = ClientDinosaurData.Assign(token.ToInt("clientId"));
+        Hash data = ClientQuestionData.Assign(token.ToInt("clientId"));
         Hash rank = ClientData.GetRank(token.ToInt("clientId"), token.ToInt("score"));
-        HashCollection names = DinosaurData.AllName(0).ToHashCollection("data");
+        HashCollection names = QuestionData.AllName(0).ToHashCollection("data");
 
         data["length"] = names.Count;
         data["duration"] = token.ToInt("duration");
@@ -54,7 +54,7 @@ public class GameService
         data["status"] = token.ToInt("status");
 
         int indexAt = random.Next(0, 4);
-        if (data.ToInt("dinosaurId")> 0)
+        if (data.ToInt("questionId")> 0)
         {
             HashCollection options = new HashCollection();
 
@@ -117,7 +117,7 @@ public class GameService
     public static Hash Restart(Hash token)
     {
         ClientData.Restart(token.ToInt("clientId"));
-        ClientDinosaurData.Restart(token.ToInt("clientId"));
+        ClientQuestionData.Restart(token.ToInt("clientId"));
 
         return new Hash((int)CodeType.OK, "成功", ClientData.GetByClientId(token.ToInt("clientId")));
     }
@@ -125,12 +125,12 @@ public class GameService
     /// 答题结果
     /// </summary>
     /// <param name="token">Hash 客户端信息</param>
-    /// <param name="dinosaurId">int 题目编号</param>
+    /// <param name="questionId">int 题目编号</param>
     /// <param name="result">int 答题结果</param>
     /// <returns>Hash 结果信息</returns>
-    public static Hash Answer(Hash token, int dinosaurId, int result)
+    public static Hash Answer(Hash token, int questionId, int result)
     {
-        if (ClientDinosaurData.Answer(token.ToInt("clientId"), dinosaurId, result) > 0)
+        if (ClientQuestionData.Answer(token.ToInt("clientId"), questionId, result) > 0)
         {
             ClientData.Answer(token.ToInt("clientId"), result);
             Hash data = ClientData.GetByClientId(token.ToInt("clientId"));

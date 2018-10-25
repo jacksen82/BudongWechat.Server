@@ -96,7 +96,7 @@ public enum CodeType : int
     /// <summary>
     /// 没有题目了
     /// </summary>
-    GameDinosaurEnd = 4001,
+    GameQuestionEnd = 4001,
     
     /// <summary>
     /// 数据库未知错误

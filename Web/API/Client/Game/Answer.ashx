@@ -8,7 +8,7 @@ public class Answer : IHttpHandler {
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
-        int dinosaurId = Parse.ToInt(context.Request.Params["dinosaurId"]);
+        int questionId = Parse.ToInt(context.Request.Params["questionId"]);
         int _result  = Parse.ToInt(context.Request.Params["result"]);
         string session3rd = context.Request.Params["session3rd"];
 
@@ -17,7 +17,7 @@ public class Answer : IHttpHandler {
 
         if (result.ToInt("code") == 0)
         {
-            result = GameService.Answer(result.ToHash("data"), dinosaurId, _result);
+            result = GameService.Answer(result.ToHash("data"), questionId, _result);
         }
 
         //  记录日志

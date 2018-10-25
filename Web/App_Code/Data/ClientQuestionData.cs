@@ -5,7 +5,7 @@ using Budong.Common.Utils;
 /// <summary>
 /// 客户端题目操作类
 /// </summary>
-public class ClientDinosaurData
+public class ClientQuestionData
 {
     /// <summary>
     /// 获取客户端进度信息
@@ -15,8 +15,8 @@ public class ClientDinosaurData
     public static Hash GetByClientId(int clientId)
     {
         string sql = "SELECT clientId,score, " +
-            "   (SELECT COUNT(*) FROM tc_client_dinosaur WHERE clientId=@0 AND result=1) AS doneCount," +
-            "   (SELECT COUNT(*) FROM td_dinosaur) AS allCount " +
+            "   (SELECT COUNT(*) FROM tc_client_question WHERE clientId=@0 AND result=1) AS doneCount," +
+            "   (SELECT COUNT(*) FROM tq_question) AS allCount " +
             "FROM tc_client WHERE clientId=@0 ";
         using (MySqlADO ado = new MySqlADO())
         {
@@ -31,7 +31,7 @@ public class ClientDinosaurData
     public static Hash Assign(int clientId)
     {
         string sql = "SELECT td.*,tcd.result " +
-            "FROM td_dinosaur td LEFT JOIN tc_client_dinosaur tcd ON td.dinosaurId=tcd.dinosaurId AND clientId=@0 " +
+            "FROM tq_question td LEFT JOIN tc_client_question tcd ON td.questionId=tcd.questionId AND clientId=@0 " +
             "WHERE IFNULL(tcd.result, 0) in (0,2) " +
             "ORDER BY IFNULL(tcd.result, 0) DESC, td.index ASC ";
         using (MySqlADO ado = new MySqlADO())
@@ -63,17 +63,17 @@ public class ClientDinosaurData
     /// 答题结果
     /// </summary>
     /// <param name="clientId">int 客户端编号</param>
-    /// <param name="dinosaurId">int 题目编号</param>
+    /// <param name="questionId">int 题目编号</param>
     /// <param name="result">int 答题结果</param>
     /// <returns>int 受影响的行数</returns>
-    public static int Answer(int clientId, int dinosaurId, int result)
+    public static int Answer(int clientId, int questionId, int result)
     {
-        string sql = "INSERT INTO tc_client_dinosaur (clientId,dinosaurId,result) " +
+        string sql = "INSERT INTO tc_client_question (clientId,questionId,result) " +
             "VALUES(@0,@1,@2) " +
-            "ON DUPLICATE KEY UPDATE clientId=VALUES(clientId),dinosaurId=VALUES(dinosaurId),result=VALUES(result),createTime=Now()";
+            "ON DUPLICATE KEY UPDATE clientId=VALUES(clientId),questionId=VALUES(questionId),result=VALUES(result),createTime=Now()";
         using (MySqlADO ado = new MySqlADO())
         {
-            return ado.NonQuery(sql, clientId, dinosaurId, result);
+            return ado.NonQuery(sql, clientId, questionId, result);
         }
     }
     /// <summary>
@@ -83,7 +83,7 @@ public class ClientDinosaurData
     /// <returns>int 受影响的行数</returns>
     public static int Restart(int clientId)
     {
-        string sql = "DELETE FROM tc_client_dinosaur WHERE clientId=@0";
+        string sql = "DELETE FROM tc_client_question WHERE clientId=@0";
         using (MySqlADO ado = new MySqlADO())
         {
             return ado.NonQuery(sql, clientId);

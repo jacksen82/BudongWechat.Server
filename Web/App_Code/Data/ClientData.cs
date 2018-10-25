@@ -156,7 +156,7 @@ public class ClientData
     public static int Answer(int clientId, int result)
     {
         string sql = "UPDATE tc_client SET " +
-            "   duration=(SELECT COUNT(*) FROM tc_client_dinosaur WHERE clientId=@0 AND result=1), " +
+            "   duration=(SELECT COUNT(*) FROM tc_client_question WHERE clientId=@0 AND result=1), " +
             "   score=IF(@1=1,score+1,score), " +
             "   status=IF(@1=1,0,200) " +
             "WHERE clientId=@0";
