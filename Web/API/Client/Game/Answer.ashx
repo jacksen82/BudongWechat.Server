@@ -21,7 +21,7 @@ public class Answer : IHttpHandler {
         }
 
         //  记录日志
-        ClientLogService.Append(session3rd);
+        LogService.Append(session3rd);
 
         //  返回结果
         context.Response.Write(result.ToJSON());

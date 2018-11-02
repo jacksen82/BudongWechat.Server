@@ -1,9 +1,9 @@
-﻿<%@ WebHandler Language="C#" Class="Assign" %>
+﻿<%@ WebHandler Language="C#" Class="Lives" %>
 
 using System.Web;
 using Budong.Common.Utils;
 
-public class Assign : IHttpHandler {
+public class Lives : IHttpHandler {
 
     public void ProcessRequest(HttpContext context)
     {
@@ -15,11 +15,11 @@ public class Assign : IHttpHandler {
 
         if (result.ToInt("code") == 0)
         {
-            result = GameService.Assign(result.ToHash("data"));
+            result = ClientService.Lives(result.ToHash("data"));
         }
 
         //  记录日志
-        ClientLogService.Append(session3rd);
+        LogService.Append(session3rd);
 
         //  返回结果
         context.Response.Write(result.ToJSON());

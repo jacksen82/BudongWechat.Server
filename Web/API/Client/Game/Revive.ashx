@@ -1,9 +1,9 @@
-﻿<%@ WebHandler Language="C#" Class="Continue" %>
+﻿<%@ WebHandler Language="C#" Class="Revive" %>
 
 using System.Web;
 using Budong.Common.Utils;
 
-public class Continue : IHttpHandler {
+public class Revive : IHttpHandler {
 
     public void ProcessRequest(HttpContext context)
     {
@@ -15,11 +15,11 @@ public class Continue : IHttpHandler {
 
         if (result.ToInt("code") == 0)
         {
-            result = GameService.Continue(result.ToHash("data"));
+            result = GameService.Revive(result.ToHash("data"));
         }
 
         //  记录日志
-        ClientLogService.Append(session3rd);
+        LogService.Append(session3rd);
 
         //  返回结果
         context.Response.Write(result.ToJSON());

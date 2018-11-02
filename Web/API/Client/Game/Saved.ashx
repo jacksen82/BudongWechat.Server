@@ -17,11 +17,11 @@ public class Saved : IHttpHandler {
 
         if (result.ToInt("code") == 0)
         {
-            result = ClientSaveService.Save(result.ToHash("data"), fromClientId, openGId);
+            result = GameService.Save(result.ToHash("data"), fromClientId, openGId);
         }
 
         //  记录日志
-        ClientLogService.Append(session3rd);
+        LogService.Append(session3rd);
 
         //  返回结果
         context.Response.Write(result.ToJSON());

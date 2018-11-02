@@ -14,7 +14,7 @@ public class Token : IHttpHandler {
         Hash result = ClientService.Token(session3rd);
 
         //  记录日志
-        ClientLogService.Append(session3rd);
+        LogService.Append(session3rd);
 
         //  返回结果
         context.Response.Write(result.ToJSON());

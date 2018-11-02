@@ -5,9 +5,9 @@ using Budong.Common.Utils;
 using Budong.Common.Third.Wechat;
 
 /// <summary>
-/// 客户端日志操作类
+/// 日志操作类
 /// </summary>
-public class ClientLogService
+public class LogService
 {
     /// <summary>
     /// 记录客户端日志

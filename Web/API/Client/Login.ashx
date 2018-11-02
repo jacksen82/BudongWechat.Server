@@ -1,5 +1,6 @@
 ﻿<%@ WebHandler Language="C#" Class="Login" %>
 
+using System;
 using System.Web;
 using Budong.Common.Utils;
 
@@ -12,6 +13,9 @@ public class Login : IHttpHandler {
 
         //  定义返回结果
         Hash result = ClientService.Login(code);
+
+        //  记录日志
+        LogService.Append(String.Empty);
 
         //  返回结果
         context.Response.Write(result.ToJSON());
