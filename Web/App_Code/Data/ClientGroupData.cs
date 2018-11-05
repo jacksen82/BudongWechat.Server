@@ -30,7 +30,7 @@ public class ClientGroupData
         string sql = "INSERT INTO tc_client_relate(fromClientId, toClientId, relateType, openGId) " +
             "SELECT a.clientId, b.clientId,@1,@0 FROM tc_client_group a, tc_client_group b " +
             "WHERE a.openGId=@0 AND b.openGId=@0 AND a.clientId!=b.clientId AND NOT EXISTS ( " +
-            "   SELECT* FROM tc_client_relate WHERE fromClientId=a.fromClientId and toClientId = b.toClientId " +
+            "   SELECT * FROM tc_client_relate WHERE fromClientId=a.clientId and toClientId = b.clientId " +
             ") ";
         using (MySqlADO ado = new MySqlADO())
         {

@@ -14,13 +14,13 @@ public class ClientQuestionData
     /// <returns>Hash 进度信息</returns>
     public static Hash GetPositionByClientId(int clientId)
     {
-        string sql = "SELECT *, " +
-            "   ( SELECT COUNT(*) FROM tc_client WHERE score>tc_client.score ) AS rankIndex, " +
-            "   ( (SELECT COUNT(*) FROM tc_client WHERE score<tc_client.score) * 100 / (SELECT COUNT(*) FROM tc_client) ) AS rankPosition, " +
+        string sql = "SELECT tc.*, " +
+            "   (SELECT COUNT(*) FROM tc_client WHERE score>tc.score) AS rankIndex, " +
+            "   ((SELECT COUNT(*) FROM tc_client WHERE score<=tc.score AND clientId<>tc.clientId) * 100 / (SELECT COUNT(*) FROM tc_client)) AS rankPosition, " +
             "   (SELECT COUNT(*) FROM tc_client_question WHERE clientId=@0 AND result=1) AS questionCorrect, " +
             "   (SELECT COUNT(*) FROM tc_client_question WHERE clientId=@0) AS questionAnswered, " +
             "   (SELECT COUNT(*) FROM tq_question) AS questionAmount " +
-            "FROM tc_client WHERE clientId=@0 ";
+            "FROM tc_client tc WHERE clientId=@0 ";
         using (MySqlADO ado = new MySqlADO())
         {
             return ado.GetHash(sql, clientId);
@@ -82,14 +82,14 @@ public class ClientQuestionData
     /// </summary>
     /// <param name="clientId">int 客户端编号</param>
     /// <param name="questionId">int 题目编号</param>
-    /// <param name="result">int 答题结果</param>
+    /// <param name="result">ResultType 答题结果</param>
     /// <returns>int 受影响的行数</returns>
-    public static int Answer(int clientId, int questionId, int result)
+    public static int Answer(int clientId, int questionId, ResultType result)
     {
         string sql = "UPDATE tc_client_question SET result=@2 WHERE clientId=@0 AND questionId=@1";
         using (MySqlADO ado = new MySqlADO())
         {
-            return ado.NonQuery(sql, clientId, questionId, result);
+            return ado.NonQuery(sql, clientId, questionId, (int)result);
         }
     }
     /// <summary>

@@ -7,16 +7,16 @@ using Budong.Common.Utils;
 public class QuestionData
 {
     /// <summary>
-    /// 获取所有题目选项
+    /// 获取题目信息
     /// </summary>
-    /// <param name="exceptQuestionId">int 排除题目编号</param>
-    /// <returns>Hash 题目集合</returns>
-    public static Hash AllName(int exceptQuestionId)
+    /// <param name="questionId">int 题目编号</param>
+    /// <returns>Hash 题目详细信息</returns>
+    public static Hash GetByQuestionId(int questionId)
     {
-        string sql = "SELECT name FROM tq_question WHERE questionId<>@0";
+        string sql = "SELECT * FROM tq_question WHERE questionId=@0";
         using (MySqlADO ado = new MySqlADO())
         {
-            return ado.GetHashCollection(sql, exceptQuestionId);
+            return ado.GetHash(sql, questionId);
         }
     }
 }

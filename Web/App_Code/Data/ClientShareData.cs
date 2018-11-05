@@ -18,7 +18,7 @@ public class ClientShareData
         string sql = "INSERT INTO tc_client_share (clientId, shareFrom, shareAction) VALUES(@0, @1, @2)";
         using (MySqlADO ado = new MySqlADO())
         {
-            return ado.NonQuery(sql, clientId, shareFrom);
+            return ado.NonQuery(sql, clientId, shareFrom, shareAction);
         }
     }
 }

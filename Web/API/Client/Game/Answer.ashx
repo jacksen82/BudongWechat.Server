@@ -9,7 +9,7 @@ public class Answer : IHttpHandler {
     {
         //  格式化参数
         int questionId = Parse.ToInt(context.Request.Params["questionId"]);
-        int _result  = Parse.ToInt(context.Request.Params["result"]);
+        int resultType  = Parse.ToInt(context.Request.Params["result"]);
         string session3rd = context.Request.Params["session3rd"];
 
         //  定义返回结果
@@ -17,7 +17,7 @@ public class Answer : IHttpHandler {
 
         if (result.ToInt("code") == 0)
         {
-            result = GameService.Answer(result.ToHash("data"), questionId, _result);
+            result = GameService.Answer(result.ToHash("data"), questionId, resultType);
         }
 
         //  记录日志

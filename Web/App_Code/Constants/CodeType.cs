@@ -94,6 +94,10 @@ public enum CodeType : int
     /// </summary>
     ClientHaveNotCard = 3101,
     /// <summary>
+    /// 客户端不能在一天内为同一个客户端激活多次
+    /// </summary>
+    ClientHaveActivated = 3111,
+    /// <summary>
     /// 没有题目了
     /// </summary>
     GameQuestionEnd = 4001,

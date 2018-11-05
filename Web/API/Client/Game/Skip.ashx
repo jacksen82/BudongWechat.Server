@@ -1,15 +1,14 @@
-﻿<%@ WebHandler Language="C#" Class="Saved" %>
+﻿<%@ WebHandler Language="C#" Class="Skip" %>
 
 using System.Web;
 using Budong.Common.Utils;
 
-public class Saved : IHttpHandler {
+public class Skip : IHttpHandler {
 
     public void ProcessRequest(HttpContext context)
     {
         //  格式化参数
-        int fromClientId = Parse.ToInt(context.Request.Params["fromClientId"]);
-        string openGId = context.Request.Params["openGId"];
+        int questionId = Parse.ToInt(context.Request.Params["questionId"]);
         string session3rd = context.Request.Params["session3rd"];
 
         //  定义返回结果
@@ -17,7 +16,7 @@ public class Saved : IHttpHandler {
 
         if (result.ToInt("code") == 0)
         {
-            result = GameService.Save(result.ToHash("data"), fromClientId, openGId);
+            result = GameService.Skip(result.ToHash("data"), questionId);
         }
 
         //  记录日志

@@ -166,6 +166,6 @@ public class ClientService
     /// <returns>Hash 返回结果</returns>
     public static Hash Lives(Hash token)
     {
-        return new Hash((int)CodeType.OK, "成功", ClientSaveData.List(token.ToInt("clientId")));
+        return new Hash((int)CodeType.OK, "成功", ClientLiveData.List(token.ToInt("clientId")));
     }
 }

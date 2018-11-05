@@ -100,7 +100,7 @@ public class ClientData
     /// <returns>int 受影响的行数</returns>
     public static int SetUserInfo(int clientId, string nick, int gender, string avatarUrl)
     {
-        string sql = "UPDATE tc_client SET nick=@1,gender=@2,avatarUrl=@3,actived=1 WHERE clientId=@0";
+        string sql = "UPDATE tc_client SET nick=@1,gender=@2,avatarUrl=@3,lives=IF(IFNULL(actived,0)=0,2,lives),actived=1 WHERE clientId=@0";
         using (MySqlADO ado = new MySqlADO())
         {
             return ado.NonQuery(sql, clientId, nick, gender, avatarUrl);
@@ -149,14 +149,24 @@ public class ClientData
     /// 更新得分
     /// </summary>
     /// <param name="clientId">int 客户端编号</param>
-    /// <param name="result">int 答题结果 [ 1 - 正确, 2 - 错误, 3 - 跳过 ]</param>
+    /// <param name="questionId">int 题目</param>
+    /// <param name="degree">int 难度等级</param>
+    /// <param name="result">ResultType 答题结果 [ 1 - 正确, 2 - 错误, 3 - 跳过 ]</param>
     /// <returns>int 受影响的行数</returns>
-    public static int Score(int clientId, int result)
+    public static int Score(int clientId, int questionId, int degree, ResultType result)
     {
-        string sql = "UPDATE tc_client SET score=IF(@1=1,score+1,score), status=IF(@1=1,0,200) WHERE clientId=@0";
+        string sql = "UPDATE tc_client SET status=status WHERE clientId=@0";
+        if (result == ResultType.Correct)
+        {
+            sql = "UPDATE tc_client SET score=score+@1 WHERE clientId=@0";
+        }
+        if (result == ResultType.Incorrect)
+        {
+            sql = "UPDATE tc_client SET status=200 WHERE clientId=@0";
+        }
         using (MySqlADO ado = new MySqlADO())
         {
-            return ado.NonQuery(sql, clientId, result);
+            return ado.NonQuery(sql, clientId, degree);
         }
     }
 }
