@@ -123,13 +123,14 @@ public class ClientData
     /// 复活继续
     /// </summary>
     /// <param name="clientId">int 客户端编号</param>
+    /// <param name="isSkip">bool 是否跳过</param>
     /// <returns>int 受影响的行数</returns>
-    public static int Revive(int clientId)
+    public static int Revive(int clientId, bool isSkip)
     {
-        string sql = "UPDATE tc_client SET lives=lives-1,status=0 WHERE clientId=@0";
+        string sql = "UPDATE tc_client SET lives=lives-@1,status=0 WHERE clientId=@0";
         using (MySqlADO ado = new MySqlADO())
         {
-            return ado.NonQuery(sql, clientId);
+            return ado.NonQuery(sql, clientId, (isSkip ? 1: 0) );
         }
     }
     /// <summary>

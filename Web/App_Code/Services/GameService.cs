@@ -29,7 +29,7 @@ public class GameService
         }
 
         //  数据库操作
-        if (ClientData.Revive(token.ToInt("clientId")) > 0)
+        if (ClientData.Revive(token.ToInt("clientId"), false) > 0)
         {
             //  获取用户游戏进度信息
             Hash data = ClientQuestionData.GetPositionByClientId(token.ToInt("clientId"));
@@ -88,6 +88,9 @@ public class GameService
     {
         if (ClientQuestionData.Answer(token.ToInt("clientId"), questionId, ResultType.Skip) > 0)
         {
+            //  恢复游戏状态
+            ClientData.Revive(token.ToInt("clientId"), true);
+
             //  获取用户游戏进度信息
             Hash data = ClientQuestionData.GetPositionByClientId(token.ToInt("clientId"));
 
@@ -170,7 +173,7 @@ public class GameService
         HashCollection friend = new HashCollection();
         for (int i = 0; i < all.Count; i++)
         {
-            if (i < 10)
+            if (i < 100)
             {
                 global.Add(all[i]);
             }

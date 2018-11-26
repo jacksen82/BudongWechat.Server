@@ -8,6 +8,20 @@ using Budong.Common.Utils;
 public class ClientQuestionData
 {
     /// <summary>
+    /// 获取客户端回答指定题目的信息
+    /// </summary>
+    /// <param name="clientId">int 客户端编号</param>
+    /// <param name="questionId">int 题目编号</param>
+    /// <returns>Hash 答题信息</returns>
+    public static Hash GetByClientIdAndQuestionId(int clientId, int questionId)
+    {
+        string sql = "SELECT * FROM tc_client_question WHERE clientId=@0 AND questionId=@1";
+        using (MySqlADO ado = new MySqlADO())
+        {
+            return ado.GetHash(sql, clientId, questionId);
+        }
+    }
+    /// <summary>
     /// 获取客户端进度信息
     /// </summary>
     /// <param name="clientId">int 客户端编号</param>

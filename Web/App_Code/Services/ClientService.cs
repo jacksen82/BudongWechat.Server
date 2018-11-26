@@ -29,6 +29,16 @@ public class ClientService
         {
             //  获取用户信息
             Hash data = ClientData.GetByClientId(clientId);
+            Hash setting = SettingData.Detail();
+
+            //  附加 APP 配置信息
+            foreach (string key in setting.Keys)
+            {
+                if (key.StartsWith("page"))
+                {
+                    data[key] = setting[key];
+                }
+            }
 
             //  返回成功结果
             return new Hash((int)CodeType.OK, "成功", data);
@@ -70,6 +80,15 @@ public class ClientService
             //  查询客户端信息
             Hash data = ClientData.GetByClientId(clientId);
 
+            //  附加 APP 配置信息
+            foreach (string key in setting.Keys)
+            {
+                if (key.StartsWith("page"))
+                {
+                    data[key] = setting[key];
+                }
+            }
+
             //  返回成功结果
             return new Hash((int)CodeType.OK, "成功", data);
         }
@@ -101,10 +120,11 @@ public class ClientService
     /// <param name="token">Hash 客户端信息</param>
     /// <param name="shareFrom">string 分享来源</param>
     /// <param name="shareAction">string 分享目的</param>
+    /// <param name="shareQuestionId">int 分享题目编号</param>
     /// <returns>Hash 返回结果</returns>
-    public static Hash Share(Hash token, string shareFrom, string shareAction)
+    public static Hash Share(Hash token, string shareFrom, string shareAction, int shareQuestionId)
     {
-        if (ClientShareData.Create(token.ToInt("clientId"), shareFrom, shareAction) > 0)
+        if (ClientShareData.Create(token.ToInt("clientId"), shareFrom, shareAction, shareQuestionId) > 0)
         {
             return new Hash((int)CodeType.OK, "成功");
         }
@@ -115,11 +135,12 @@ public class ClientService
     /// </summary>
     /// <param name="token">Hash 客户端信息</param>
     /// <param name="fromClientId">int 邀请人客户端编号</param>
+    /// <param name="shareQuestionId">int 分享题目编号</param>
     /// <param name="scene">int 来源场景</param>
     /// <param name="encryptedData">string 群标识加密信息</param>
     /// <param name="iv">string 群标识加密向量</param>
     /// <returns>Hash 返回结果</returns>
-    public static Hash Relation(Hash token, int fromClientId, int scene, string encryptedData, string iv)
+    public static Hash Relation(Hash token, int fromClientId, int shareQuestionId, int scene, string encryptedData, string iv)
     {
         //  如果邀请人不存在，则跳出
         if (fromClientId == 0)
@@ -152,6 +173,16 @@ public class ClientService
             //  如果来自群会话
             ClientGroupData.Create(token.ToInt("clientId"), shareTicket.ToString("openGId"));
             ClientGroupData.Renovate(shareTicket.ToString("openGId"));
+        }
+
+        //  初始化题目
+        if (shareQuestionId > 0)
+        {
+            Hash question = ClientQuestionData.GetByClientIdAndQuestionId(token.ToInt("clientId"), shareQuestionId);
+            if (question.ToInt("id") == 0)
+            {
+                ClientQuestionData.Ready(token.ToInt("clientId"), shareQuestionId);
+            }
         }
 
         //  拼装结果信息
